@@ -1,0 +1,430 @@
+<template>
+    <div>
+        <PageHeader title="Warehouses" subtitle="Manage inventory locations and distribution hubs">
+            <template #actions>
+                <button
+                    v-if="canManage"
+                    type="button"
+                    class="inline-flex items-center px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-[#1E5AA8] hover:bg-[#174A8A] min-h-[44px] transition-colors"
+                    @click="openCreateModal"
+                >
+                    <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M12 4v16m8-8H4"
+                        />
+                    </svg>
+                    Add Warehouse
+                </button>
+            </template>
+        </PageHeader>
+
+        <!-- Filters Bar -->
+        <div
+            class="mb-4 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between"
+        >
+            <SearchInput
+                v-model="search"
+                placeholder="Search by name, location, or contact..."
+                @search="fetchWarehouses(1)"
+            />
+
+            <div class="flex items-center space-x-3">
+                <select
+                    v-model="statusFilter"
+                    class="px-3 py-2 bg-white border border-[#DDE3EA] rounded-md text-sm text-[#1F2933] min-h-[44px] focus:outline-none focus:ring-1 focus:ring-[#1E5AA8]"
+                    @change="fetchWarehouses(1)"
+                >
+                    <option value="">All Statuses</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Data Table -->
+        <DataTable
+            :columns="columns"
+            :rows="warehouses"
+            :loading="loading"
+            :error="error"
+            :sort-key="sortBy"
+            :sort-order="sortDirection"
+            @sort="handleSort"
+            @retry="fetchWarehouses(pagination.current_page)"
+        >
+            <template #status="{ row }">
+                <StatusBadge :status="row.status" />
+            </template>
+
+            <template #contact="{ row }">
+                <div class="text-xs">
+                    <p class="font-medium text-[#1F2933]">{{ row.contact_person || '-' }}</p>
+                    <p class="text-[#637083]">{{ row.phone || row.email || '' }}</p>
+                </div>
+            </template>
+
+            <template #actions="{ row }">
+                <div v-if="canManage" class="flex items-center space-x-2">
+                    <button
+                        type="button"
+                        class="text-[#1E5AA8] hover:text-[#174A8A] font-medium text-xs py-1 px-2 rounded hover:bg-[#EAF2FB] min-h-[32px]"
+                        @click="openEditModal(row)"
+                    >
+                        Edit
+                    </button>
+                    <button
+                        v-if="row.status === 'active'"
+                        type="button"
+                        class="text-[#B42318] hover:text-[#912018] font-medium text-xs py-1 px-2 rounded hover:bg-[#FDE8E8] min-h-[32px]"
+                        @click="confirmDeactivate(row)"
+                    >
+                        Deactivate
+                    </button>
+                </div>
+                <span v-else class="text-xs text-[#637083]">-</span>
+            </template>
+        </DataTable>
+
+        <Pagination :meta="pagination" @page-change="fetchWarehouses" />
+
+        <!-- Create / Edit Modal -->
+        <div
+            v-if="showModal"
+            class="fixed inset-0 z-50 overflow-y-auto"
+            role="dialog"
+            aria-modal="true"
+        >
+            <div class="flex items-center justify-center min-h-screen px-4 text-center sm:p-0">
+                <div class="fixed inset-0 bg-black/40 transition-opacity" @click="closeModal"></div>
+
+                <div
+                    class="relative bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-lg sm:w-full p-6 space-y-4"
+                >
+                    <div class="flex justify-between items-center border-b border-[#DDE3EA] pb-3">
+                        <h3 class="text-lg font-semibold text-[#1F2933]">
+                            {{ isEditing ? 'Edit Warehouse' : 'Create Warehouse' }}
+                        </h3>
+                        <button
+                            type="button"
+                            class="text-[#637083] hover:text-[#1F2933]"
+                            @click="closeModal"
+                        >
+                            <svg
+                                class="w-5 h-5"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12"
+                                />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <form class="space-y-4" @submit.prevent="saveWarehouse">
+                        <FormField
+                            label="Warehouse Name"
+                            id="name"
+                            required
+                            :error="formErrors.name"
+                        >
+                            <template #default="{ inputClass }">
+                                <input
+                                    id="name"
+                                    v-model="form.name"
+                                    type="text"
+                                    required
+                                    :class="inputClass"
+                                    placeholder="e.g. South Logistics Depot"
+                                />
+                            </template>
+                        </FormField>
+
+                        <FormField
+                            label="Location / Address"
+                            id="location"
+                            :error="formErrors.location"
+                        >
+                            <template #default="{ inputClass }">
+                                <input
+                                    id="location"
+                                    v-model="form.location"
+                                    type="text"
+                                    :class="inputClass"
+                                    placeholder="Address or sector details"
+                                />
+                            </template>
+                        </FormField>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <FormField
+                                label="Contact Person"
+                                id="contact_person"
+                                :error="formErrors.contact_person"
+                            >
+                                <template #default="{ inputClass }">
+                                    <input
+                                        id="contact_person"
+                                        v-model="form.contact_person"
+                                        type="text"
+                                        :class="inputClass"
+                                    />
+                                </template>
+                            </FormField>
+
+                            <FormField label="Phone" id="phone" :error="formErrors.phone">
+                                <template #default="{ inputClass }">
+                                    <input
+                                        id="phone"
+                                        v-model="form.phone"
+                                        type="text"
+                                        :class="inputClass"
+                                    />
+                                </template>
+                            </FormField>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <FormField label="Email" id="email" :error="formErrors.email">
+                                <template #default="{ inputClass }">
+                                    <input
+                                        id="email"
+                                        v-model="form.email"
+                                        type="email"
+                                        :class="inputClass"
+                                    />
+                                </template>
+                            </FormField>
+
+                            <FormField
+                                label="Status"
+                                id="status"
+                                required
+                                :error="formErrors.status"
+                            >
+                                <template #default="{ inputClass }">
+                                    <select
+                                        id="status"
+                                        v-model="form.status"
+                                        required
+                                        :class="inputClass"
+                                    >
+                                        <option value="active">Active</option>
+                                        <option value="inactive">Inactive</option>
+                                    </select>
+                                </template>
+                            </FormField>
+                        </div>
+
+                        <div class="flex justify-end space-x-3 pt-3 border-t border-[#DDE3EA]">
+                            <button
+                                type="button"
+                                class="px-4 py-2 border border-[#DDE3EA] rounded-md text-sm font-medium text-[#1F2933] bg-white hover:bg-[#F7F9FC] min-h-[44px]"
+                                @click="closeModal"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="submit"
+                                :disabled="saving"
+                                class="px-4 py-2 rounded-md text-sm font-medium text-white bg-[#1E5AA8] hover:bg-[#174A8A] disabled:opacity-50 min-h-[44px] transition-colors"
+                            >
+                                {{
+                                    saving
+                                        ? 'Saving...'
+                                        : isEditing
+                                          ? 'Update Warehouse'
+                                          : 'Create Warehouse'
+                                }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Confirm Deactivation Dialog -->
+        <ConfirmDialog
+            :is-open="showDeactivateDialog"
+            title="Deactivate Warehouse"
+            :message="`Are you sure you want to deactivate '${targetWarehouse?.name}'? If it has stock history, it will remain safely in the system as inactive.`"
+            confirm-text="Deactivate"
+            @confirm="executeDeactivate"
+            @cancel="showDeactivateDialog = false"
+        />
+    </div>
+</template>
+
+<script setup>
+import { ref, reactive, computed, onMounted } from 'vue';
+import api from '../../api/axios';
+import { useAuthStore } from '../../stores/auth';
+import { useToastStore } from '../../stores/toast';
+import PageHeader from '../../components/PageHeader.vue';
+import DataTable from '../../components/DataTable.vue';
+import Pagination from '../../components/Pagination.vue';
+import SearchInput from '../../components/SearchInput.vue';
+import StatusBadge from '../../components/StatusBadge.vue';
+import FormField from '../../components/FormField.vue';
+import ConfirmDialog from '../../components/ConfirmDialog.vue';
+
+const authStore = useAuthStore();
+const toastStore = useToastStore();
+
+const canManage = computed(() => authStore.hasPermission('warehouses.manage'));
+
+const warehouses = ref([]);
+const loading = ref(false);
+const error = ref(null);
+const search = ref('');
+const statusFilter = ref('');
+const sortBy = ref('created_at');
+const sortDirection = ref('desc');
+
+const pagination = reactive({
+    current_page: 1,
+    last_page: 1,
+    total: 0,
+    from: 0,
+    to: 0,
+});
+
+const columns = [
+    { key: 'name', label: 'Warehouse Name', sortable: true },
+    { key: 'location', label: 'Location' },
+    { key: 'contact', label: 'Contact' },
+    { key: 'status', label: 'Status' },
+    { key: 'actions', label: 'Actions', cellClass: 'text-right' },
+];
+
+const showModal = ref(false);
+const isEditing = ref(false);
+const saving = ref(false);
+const formErrors = ref({});
+const targetWarehouse = ref(null);
+const showDeactivateDialog = ref(false);
+
+const form = reactive({
+    id: null,
+    name: '',
+    location: '',
+    contact_person: '',
+    phone: '',
+    email: '',
+    status: 'active',
+});
+
+const fetchWarehouses = async (page = 1) => {
+    loading.value = true;
+    error.value = null;
+    try {
+        const res = await api.get('/api/warehouses', {
+            params: {
+                page,
+                search: search.value,
+                status: statusFilter.value,
+                sort_by: sortBy.value,
+                sort_direction: sortDirection.value,
+            },
+        });
+        warehouses.value = res.data.data;
+        Object.assign(pagination, res.data.meta);
+    } catch (err) {
+        error.value = err.response?.data?.message || 'Failed to load warehouses.';
+    } finally {
+        loading.value = false;
+    }
+};
+
+const handleSort = (key) => {
+    if (sortBy.value === key) {
+        sortDirection.value = sortDirection.value === 'asc' ? 'desc' : 'asc';
+    } else {
+        sortBy.value = key;
+        sortDirection.value = 'asc';
+    }
+    fetchWarehouses(1);
+};
+
+const openCreateModal = () => {
+    isEditing.value = false;
+    form.id = null;
+    form.name = '';
+    form.location = '';
+    form.contact_person = '';
+    form.phone = '';
+    form.email = '';
+    form.status = 'active';
+    formErrors.value = {};
+    showModal.value = true;
+};
+
+const openEditModal = (wh) => {
+    isEditing.value = true;
+    form.id = wh.id;
+    form.name = wh.name;
+    form.location = wh.location || '';
+    form.contact_person = wh.contact_person || '';
+    form.phone = wh.phone || '';
+    form.email = wh.email || '';
+    form.status = wh.status;
+    formErrors.value = {};
+    showModal.value = true;
+};
+
+const closeModal = () => {
+    showModal.value = false;
+    formErrors.value = {};
+};
+
+const saveWarehouse = async () => {
+    saving.value = true;
+    formErrors.value = {};
+    try {
+        if (isEditing.value) {
+            await api.put(`/api/warehouses/${form.id}`, form);
+            toastStore.success('Warehouse updated successfully.');
+        } else {
+            await api.post('/api/warehouses', form);
+            toastStore.success('Warehouse created successfully.');
+        }
+        closeModal();
+        fetchWarehouses(pagination.current_page);
+    } catch (err) {
+        if (err.response?.status === 422 && err.response?.data?.errors) {
+            formErrors.value = err.response.data.errors;
+        } else {
+            toastStore.error(err.response?.data?.message || 'Failed to save warehouse.');
+        }
+    } finally {
+        saving.value = false;
+    }
+};
+
+const confirmDeactivate = (wh) => {
+    targetWarehouse.value = wh;
+    showDeactivateDialog.value = true;
+};
+
+const executeDeactivate = async () => {
+    showDeactivateDialog.value = false;
+    try {
+        const res = await api.delete(`/api/warehouses/${targetWarehouse.value.id}`);
+        toastStore.success(res.data.message || 'Warehouse deactivated successfully.');
+        fetchWarehouses(pagination.current_page);
+    } catch (err) {
+        toastStore.error(err.response?.data?.message || 'Failed to update warehouse.');
+    }
+};
+
+onMounted(() => {
+    fetchWarehouses(1);
+});
+</script>

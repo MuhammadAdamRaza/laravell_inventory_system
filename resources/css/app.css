@@ -1,0 +1,74 @@
+@import 'tailwindcss';
+
+@layer base {
+    :root {
+        --color-primary-600: #1E5AA8;
+        --color-primary-700: #174A8A;
+        --color-primary-50: #EAF2FB;
+        --color-bg: #F5F7FA;
+        --color-surface: #FFFFFF;
+        --color-border: #DDE3EA;
+        --color-text: #1F2933;
+        --color-text-muted: #637083;
+        --color-sidebar: #14213D;
+        --color-sidebar-text: #C9D3E0;
+        --color-sidebar-active: #1E3A66;
+
+        --status-success-bg: #E6F4EA;
+        --status-success-text: #1E7B3A;
+        --status-warning-bg: #FFF4E0;
+        --status-warning-text: #9A5B00;
+        --status-danger-bg: #FDE8E8;
+        --status-danger-text: #B42318;
+        --status-info-bg: #E8F1FD;
+        --status-info-text: #1E5AA8;
+        --status-neutral-bg: #EEF1F5;
+        --status-neutral-text: #4B5563;
+    }
+
+    body {
+        font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        font-size: 14px;
+        line-height: 1.5;
+        background-color: var(--color-bg);
+        color: var(--color-text);
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+    }
+}
+
+/* Custom utility styles matching design tokens */
+.bg-surface { background-color: var(--color-surface); }
+.border-app { border-color: var(--color-border); }
+.text-main { color: var(--color-text); }
+.text-muted { color: var(--color-text-muted); }
+.bg-primary-app { background-color: var(--color-primary-600); }
+.bg-primary-hover:hover { background-color: var(--color-primary-700); }
+.text-primary-app { color: var(--color-primary-600); }
+.bg-sidebar { background-color: var(--color-sidebar); }
+
+.card-shadow {
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.06);
+}
+
+.table-row-hover:hover {
+    background-color: #F7F9FC;
+}
+
+/* Responsive touch target guarantee */
+.btn-touch {
+    min-height: 44px;
+}
+
+/* Keep the sidebar independently scrollable without showing its scrollbar. */
+.sidebar-nav-scroll {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.sidebar-nav-scroll::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+}
