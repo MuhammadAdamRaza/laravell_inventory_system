@@ -5,20 +5,20 @@
                 ><router-link
                     v-if="auth.hasPermission('sales.create')"
                     :to="{ name: 'sales-order-create' }"
-                    class="min-h-11 rounded-md bg-[#1E5AA8] px-4 py-2 text-sm font-semibold text-white hover:bg-[#174A8A]"
+                    class="min-h-11 rounded-md bg-primary-app px-4 py-2 text-sm font-semibold text-white bg-primary-hover"
                     >New sales order</router-link
                 ></template
             ></PageHeader
         >
-        <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <div class="filter-bar grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <input
                 v-model="search"
                 placeholder="Search order or customer"
-                class="min-h-11 rounded-md border border-[#DDE3EA] px-3 text-sm"
+                class="min-h-11 rounded-md border border-app px-3 text-sm"
                 @input="fetch(1)"
             /><select
                 v-model="status"
-                class="min-h-11 rounded-md border border-[#DDE3EA] bg-white px-3 text-sm"
+                class="min-h-11 rounded-md border border-app bg-white px-3 text-sm"
                 @change="fetch(1)"
             >
                 <option value="">All statuses</option>
@@ -29,13 +29,13 @@
                 >From<input
                     v-model="dateFrom"
                     type="date"
-                    class="mt-1 min-h-11 w-full rounded-md border border-[#DDE3EA] px-3 text-sm text-slate-800"
+                    class="mt-1 min-h-11 w-full rounded-md border border-app px-3 text-sm text-slate-800"
                     @change="fetch(1)" /></label
             ><label class="text-xs text-slate-500"
                 >To<input
                     v-model="dateTo"
                     type="date"
-                    class="mt-1 min-h-11 w-full rounded-md border border-[#DDE3EA] px-3 text-sm text-slate-800"
+                    class="mt-1 min-h-11 w-full rounded-md border border-app px-3 text-sm text-slate-800"
                     @change="fetch(1)"
             /></label>
         </div>
@@ -47,11 +47,11 @@
         </div>
         <div
             v-else-if="!rows.length"
-            class="rounded-lg border border-dashed border-slate-300 bg-white p-10 text-center text-sm text-slate-500"
+            class="surface-card rounded-lg border border-dashed border-slate-300 bg-white p-10 text-center text-sm text-slate-500"
         >
             No sales orders found.
         </div>
-        <div v-else class="overflow-hidden rounded-lg border border-[#DDE3EA] bg-white">
+        <div v-else class="surface-card overflow-hidden rounded-lg border border-app bg-white">
             <div class="hidden overflow-x-auto md:block">
                 <table class="w-full text-left text-sm">
                     <thead class="bg-slate-50 text-xs uppercase text-slate-500">
@@ -76,7 +76,7 @@
                         <tr v-for="row in rows" :key="row.id" class="hover:bg-slate-50">
                             <td class="px-4 py-3">
                                 <router-link
-                                    class="font-semibold text-[#1E5AA8] hover:underline"
+                                    class="font-semibold text-primary-app hover:underline"
                                     :to="{ name: 'sales-order-detail', params: { id: row.id } }"
                                     >{{ row.order_number }}</router-link
                                 >
@@ -97,7 +97,7 @@
                     :to="{ name: 'sales-order-detail', params: { id: row.id } }"
                     class="block space-y-2 p-4"
                     ><div class="flex items-center justify-between gap-2">
-                        <strong class="text-[#1E5AA8]">{{ row.order_number }}</strong
+                        <strong class="text-primary-app">{{ row.order_number }}</strong
                         ><StatusBadge :status="row.status" />
                     </div>
                     <p class="text-sm text-slate-700">

@@ -2,37 +2,98 @@
     <section class="space-y-5">
         <header class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
-                <p class="text-xs font-semibold uppercase tracking-[0.16em] text-[#1E5AA8]">System administration</p>
-                <h1 class="mt-1 text-2xl font-semibold text-[#1F2933]">Failed jobs</h1>
-                <p class="mt-1 text-sm text-[#637083]">Review failed queue jobs and retry them safely.</p>
+                <p class="text-xs font-semibold uppercase tracking-[0.16em] text-primary-app">
+                    System administration
+                </p>
+                <h1 class="mt-1 text-2xl font-semibold text-main">Failed jobs</h1>
+                <p class="mt-1 text-sm text-muted">
+                    Review failed queue jobs and retry them safely.
+                </p>
             </div>
-            <button type="button" class="min-h-10 rounded-md border border-[#DDE3EA] bg-white px-4 text-sm font-semibold text-[#405064] hover:bg-[#F7F9FC]" @click="loadJobs">Refresh</button>
+            <button
+                type="button"
+                class="min-h-10 rounded-md border border-app bg-white px-4 text-sm font-semibold text-[#405064] bg-hover-surface"
+                @click="loadJobs"
+            >
+                Refresh
+            </button>
         </header>
 
-        <p v-if="message" class="rounded-md border border-[#B8E3C4] bg-[#F0FDF4] p-3 text-sm text-[#166534]">{{ message }}</p>
-        <p v-if="error" class="rounded-md border border-[#F2C7C4] bg-[#FEF3F2] p-3 text-sm text-[#912018]">{{ error }}</p>
-        <div v-if="loading" class="rounded-lg border border-[#DDE3EA] bg-white p-8 text-center text-sm text-[#637083]">Loading failed jobs…</div>
-        <div v-else-if="jobs.length === 0" class="rounded-lg border border-dashed border-[#C9D3E0] bg-white px-5 py-12 text-center text-sm text-[#637083]">No failed jobs recorded.</div>
+        <p
+            v-if="message"
+            class="rounded-md border border-[#B8E3C4] bg-[#F0FDF4] p-3 text-sm text-[#166534]"
+        >
+            {{ message }}
+        </p>
+        <p
+            v-if="error"
+            class="rounded-md border border-[#F2C7C4] bg-[#FEF3F2] p-3 text-sm text-[#912018]"
+        >
+            {{ error }}
+        </p>
+        <div
+            v-if="loading"
+            class="surface-card rounded-lg border border-app bg-white p-8 text-center text-sm text-muted"
+        >
+            Loading failed jobs…
+        </div>
+        <div
+            v-else-if="jobs.length === 0"
+            class="surface-card rounded-lg border border-dashed border-[#C9D3E0] bg-white px-5 py-12 text-center text-sm text-muted"
+        >
+            No failed jobs recorded.
+        </div>
         <div v-else class="space-y-3">
-            <article v-for="job in jobs" :key="job.uuid" class="rounded-lg border border-[#DDE3EA] bg-white p-4 sm:p-5">
+            <article
+                v-for="job in jobs"
+                :key="job.uuid"
+                class="surface-card rounded-lg border border-app bg-white p-4 sm:p-5"
+            >
                 <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     <div class="min-w-0">
                         <div class="flex flex-wrap items-center gap-2">
-                            <span class="rounded-full bg-[#FEF3F2] px-2.5 py-1 text-xs font-semibold text-[#B42318]">{{ job.queue }}</span>
-                            <span class="text-xs text-[#637083]">{{ job.connection }} · {{ formatDate(job.failed_at) }}</span>
+                            <span
+                                class="rounded-full bg-[#FEF3F2] px-2.5 py-1 text-xs font-semibold text-[#B42318]"
+                                >{{ job.queue }}</span
+                            >
+                            <span class="text-xs text-muted"
+                                >{{ job.connection }} · {{ formatDate(job.failed_at) }}</span
+                            >
                         </div>
-                        <p class="mt-2 break-all font-mono text-xs text-[#637083]">{{ job.uuid }}</p>
-                        <p class="mt-2 break-words text-sm text-[#1F2933]">{{ job.summary }}</p>
+                        <p class="mt-2 break-all font-mono text-xs text-muted">{{ job.uuid }}</p>
+                        <p class="mt-2 break-words text-sm text-main">{{ job.summary }}</p>
                     </div>
-                    <button type="button" class="min-h-10 shrink-0 rounded-md bg-[#14213D] px-4 text-sm font-semibold text-white hover:bg-[#1E3A66] disabled:opacity-50" :disabled="retrying === job.uuid" @click="retryJob(job.uuid)">{{ retrying === job.uuid ? 'Retrying…' : 'Retry job' }}</button>
+                    <button
+                        type="button"
+                        class="min-h-10 shrink-0 rounded-md bg-sidebar px-4 text-sm font-semibold text-white hover:bg-sidebar-active disabled:opacity-50"
+                        :disabled="retrying === job.uuid"
+                        @click="retryJob(job.uuid)"
+                    >
+                        {{ retrying === job.uuid ? 'Retrying…' : 'Retry job' }}
+                    </button>
                 </div>
             </article>
         </div>
-        <footer v-if="meta.last_page > 1" class="flex items-center justify-between text-sm text-[#637083]">
+        <footer
+            v-if="meta.last_page > 1"
+            class="flex items-center justify-between text-sm text-muted"
+        >
             <span>Page {{ meta.current_page }} of {{ meta.last_page }}</span>
             <div class="flex gap-2">
-                <button class="min-h-10 rounded-md border border-[#DDE3EA] px-3 disabled:opacity-40" :disabled="meta.current_page <= 1" @click="loadJobs(meta.current_page - 1)">Previous</button>
-                <button class="min-h-10 rounded-md border border-[#DDE3EA] px-3 disabled:opacity-40" :disabled="meta.current_page >= meta.last_page" @click="loadJobs(meta.current_page + 1)">Next</button>
+                <button
+                    class="min-h-10 rounded-md border border-app px-3 disabled:opacity-40"
+                    :disabled="meta.current_page <= 1"
+                    @click="loadJobs(meta.current_page - 1)"
+                >
+                    Previous
+                </button>
+                <button
+                    class="min-h-10 rounded-md border border-app px-3 disabled:opacity-40"
+                    :disabled="meta.current_page >= meta.last_page"
+                    @click="loadJobs(meta.current_page + 1)"
+                >
+                    Next
+                </button>
             </div>
         </footer>
     </section>

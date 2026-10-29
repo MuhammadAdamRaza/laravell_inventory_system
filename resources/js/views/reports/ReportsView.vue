@@ -1,24 +1,78 @@
 <template>
     <div class="space-y-6">
-        <PageHeader title="Reports" subtitle="Explore inventory, purchasing and sales performance." />
-        <section class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            <router-link v-for="report in availableReports" :key="report.path" :to="`/reports/${report.path}`" class="group rounded-lg border border-[#DDE3EA] bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-[#1E5AA8] hover:shadow-md">
-                <div class="flex items-start justify-between gap-4"><div><h2 class="font-semibold text-[#1F2933]">{{ report.title }}</h2><p class="mt-2 text-sm leading-6 text-[#637083]">{{ report.description }}</p></div><span class="rounded-full bg-[#EAF2FC] px-3 py-1 text-xs font-semibold text-[#1E5AA8]">Open</span></div>
-                <span class="mt-5 inline-flex text-sm font-semibold text-[#1E5AA8]">View report <span aria-hidden="true" class="ml-2">→</span></span>
+        <PageHeader
+            title="Reports & insights"
+            subtitle="Turn inventory and order activity into clear, actionable information."
+        />
+        <section class="grid gap-4 sm:grid-cols-2 xl:grid-cols-2">
+            <router-link
+                v-for="report in availableReports"
+                :key="report.path"
+                :to="`/reports/${report.path}`"
+                class="surface-card group p-6 transition hover:border-blue-300 hover:shadow-md"
+            >
+                <div class="flex items-start justify-between">
+                    <span
+                        class="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-primary-app"
+                        ><AppIcon
+                            :name="
+                                report.path === 'inventory-valuation'
+                                    ? 'warehouse'
+                                    : report.path === 'purchases'
+                                      ? 'purchase'
+                                      : 'chart'
+                            "
+                            class="h-6 w-6" /></span
+                    ><AppIcon
+                        name="arrow"
+                        class="h-5 w-5 text-slate-300 transition group-hover:translate-x-1 group-hover:text-blue-600"
+                    />
+                </div>
+                <h2 class="mt-6 text-base font-semibold tracking-tight text-main">
+                    {{ report.title }}
+                </h2>
+                <p class="mt-2 max-w-md text-xs leading-6 text-muted">{{ report.description }}</p>
+                <span
+                    class="mt-6 inline-flex items-center gap-2 text-xs font-semibold text-primary-app"
+                    >Explore report<AppIcon name="chevron" class="h-3 w-3"
+                /></span>
             </router-link>
         </section>
     </div>
 </template>
 <script setup>
 import { computed } from 'vue';
+import AppIcon from '../../components/AppIcon.vue';
 import PageHeader from '../../components/PageHeader.vue';
 import { useAuthStore } from '../../stores/auth';
 const auth = useAuthStore();
 const reports = [
-    { path: 'purchases', title: 'Purchases', description: 'Review purchases by date, warehouse, supplier and status.', permission: 'purchases.view' },
-    { path: 'sales', title: 'Sales', description: 'Review confirmed customer orders and sales totals.', permission: 'sales.view' },
-    { path: 'top-products', title: 'Top selling products', description: 'Compare products by confirmed units sold and sales value.', permission: 'sales.view' },
-    { path: 'inventory-valuation', title: 'Inventory valuation', description: 'See stock quantities and purchase-cost value by product and warehouse.', permission: 'inventory.view' },
+    {
+        path: 'purchases',
+        title: 'Purchases',
+        description: 'Review purchases by date, warehouse, supplier and status.',
+        permission: 'purchases.view',
+    },
+    {
+        path: 'sales',
+        title: 'Sales',
+        description: 'Review confirmed customer orders and sales totals.',
+        permission: 'sales.view',
+    },
+    {
+        path: 'top-products',
+        title: 'Top selling products',
+        description: 'Compare products by confirmed units sold and sales value.',
+        permission: 'sales.view',
+    },
+    {
+        path: 'inventory-valuation',
+        title: 'Inventory valuation',
+        description: 'See stock quantities and purchase-cost value by product and warehouse.',
+        permission: 'inventory.view',
+    },
 ];
-const availableReports = computed(() => reports.filter((report) => auth.hasPermission(report.permission)));
+const availableReports = computed(() =>
+    reports.filter((report) => auth.hasPermission(report.permission)),
+);
 </script>

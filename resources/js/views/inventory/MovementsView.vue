@@ -7,7 +7,7 @@
 
         <!-- Filters Bar -->
         <div
-            class="mb-4 flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between"
+            class="filter-bar mb-4 flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between"
         >
             <SearchInput
                 v-model="search"
@@ -18,7 +18,7 @@
             <div class="flex flex-wrap items-center gap-3">
                 <select
                     v-model="movementTypeFilter"
-                    class="px-3 py-2 bg-white border border-[#DDE3EA] rounded-md text-sm text-[#1F2933] min-h-[44px] focus:outline-none focus:ring-1 focus:ring-[#1E5AA8]"
+                    class="px-3 py-2 bg-white border border-app rounded-md text-sm text-main min-h-[44px] focus:outline-none focus:ring-1 focus:ring-[#1E5AA8]"
                     @change="fetchMovements(1)"
                 >
                     <option value="">All Movement Types</option>
@@ -41,13 +41,13 @@
         >
             <template #product="{ row }">
                 <div>
-                    <p class="font-medium text-[#1F2933]">{{ row.product_name }}</p>
-                    <p class="text-xs text-[#637083] font-mono">{{ row.sku }}</p>
+                    <p class="font-medium text-main">{{ row.product_name }}</p>
+                    <p class="text-xs text-muted font-mono">{{ row.sku }}</p>
                 </div>
             </template>
 
             <template #warehouse="{ row }">
-                <span class="text-xs font-medium text-[#1F2933]">{{ row.warehouse_name }}</span>
+                <span class="text-xs font-medium text-main">{{ row.warehouse_name }}</span>
             </template>
 
             <template #movement_type="{ row }">
@@ -68,15 +68,15 @@
             </template>
 
             <template #balance_after="{ row }">
-                <span class="font-semibold text-sm text-[#1F2933]">{{ row.balance_after }}</span>
+                <span class="font-semibold text-sm text-main">{{ row.balance_after }}</span>
             </template>
 
             <template #user="{ row }">
-                <span class="text-xs text-[#637083]">{{ row.user_name || 'System' }}</span>
+                <span class="text-xs text-muted">{{ row.user_name || 'System' }}</span>
             </template>
 
             <template #date="{ row }">
-                <span class="text-xs text-[#637083]">{{ formatDate(row.created_at) }}</span>
+                <span class="text-xs text-muted">{{ formatDate(row.created_at) }}</span>
             </template>
         </DataTable>
 

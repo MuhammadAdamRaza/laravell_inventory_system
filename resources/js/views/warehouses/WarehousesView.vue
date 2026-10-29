@@ -5,7 +5,7 @@
                 <button
                     v-if="canManage"
                     type="button"
-                    class="inline-flex items-center px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-[#1E5AA8] hover:bg-[#174A8A] min-h-[44px] transition-colors"
+                    class="inline-flex items-center px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-primary-app bg-primary-hover min-h-[44px] transition-colors"
                     @click="openCreateModal"
                 >
                     <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -23,7 +23,7 @@
 
         <!-- Filters Bar -->
         <div
-            class="mb-4 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between"
+            class="filter-bar mb-4 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between"
         >
             <SearchInput
                 v-model="search"
@@ -34,7 +34,7 @@
             <div class="flex items-center space-x-3">
                 <select
                     v-model="statusFilter"
-                    class="px-3 py-2 bg-white border border-[#DDE3EA] rounded-md text-sm text-[#1F2933] min-h-[44px] focus:outline-none focus:ring-1 focus:ring-[#1E5AA8]"
+                    class="px-3 py-2 bg-white border border-app rounded-md text-sm text-main min-h-[44px] focus:outline-none focus:ring-1 focus:ring-[#1E5AA8]"
                     @change="fetchWarehouses(1)"
                 >
                     <option value="">All Statuses</option>
@@ -61,8 +61,8 @@
 
             <template #contact="{ row }">
                 <div class="text-xs">
-                    <p class="font-medium text-[#1F2933]">{{ row.contact_person || '-' }}</p>
-                    <p class="text-[#637083]">{{ row.phone || row.email || '' }}</p>
+                    <p class="font-medium text-main">{{ row.contact_person || '-' }}</p>
+                    <p class="text-muted">{{ row.phone || row.email || '' }}</p>
                 </div>
             </template>
 
@@ -70,7 +70,7 @@
                 <div v-if="canManage" class="flex items-center space-x-2">
                     <button
                         type="button"
-                        class="text-[#1E5AA8] hover:text-[#174A8A] font-medium text-xs py-1 px-2 rounded hover:bg-[#EAF2FB] min-h-[32px]"
+                        class="text-primary-app hover:text-[#174A8A] font-medium text-xs py-1 px-2 rounded hover:bg-[#EAF2FB] min-h-[32px]"
                         @click="openEditModal(row)"
                     >
                         Edit
@@ -84,7 +84,7 @@
                         Deactivate
                     </button>
                 </div>
-                <span v-else class="text-xs text-[#637083]">-</span>
+                <span v-else class="text-xs text-muted">-</span>
             </template>
         </DataTable>
 
@@ -103,13 +103,13 @@
                 <div
                     class="relative bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-lg sm:w-full p-6 space-y-4"
                 >
-                    <div class="flex justify-between items-center border-b border-[#DDE3EA] pb-3">
-                        <h3 class="text-lg font-semibold text-[#1F2933]">
+                    <div class="flex justify-between items-center border-b border-app pb-3">
+                        <h3 class="text-lg font-semibold text-main">
                             {{ isEditing ? 'Edit Warehouse' : 'Create Warehouse' }}
                         </h3>
                         <button
                             type="button"
-                            class="text-[#637083] hover:text-[#1F2933]"
+                            class="text-muted hover:text-main"
                             @click="closeModal"
                         >
                             <svg
@@ -223,10 +223,10 @@
                             </FormField>
                         </div>
 
-                        <div class="flex justify-end space-x-3 pt-3 border-t border-[#DDE3EA]">
+                        <div class="flex justify-end space-x-3 pt-3 border-t border-app">
                             <button
                                 type="button"
-                                class="px-4 py-2 border border-[#DDE3EA] rounded-md text-sm font-medium text-[#1F2933] bg-white hover:bg-[#F7F9FC] min-h-[44px]"
+                                class="px-4 py-2 border border-app rounded-md text-sm font-medium text-main bg-white bg-hover-surface min-h-[44px]"
                                 @click="closeModal"
                             >
                                 Cancel
@@ -234,7 +234,7 @@
                             <button
                                 type="submit"
                                 :disabled="saving"
-                                class="px-4 py-2 rounded-md text-sm font-medium text-white bg-[#1E5AA8] hover:bg-[#174A8A] disabled:opacity-50 min-h-[44px] transition-colors"
+                                class="px-4 py-2 rounded-md text-sm font-medium text-white bg-primary-app bg-primary-hover disabled:opacity-50 min-h-[44px] transition-colors"
                             >
                                 {{
                                     saving

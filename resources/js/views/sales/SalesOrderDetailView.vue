@@ -19,7 +19,7 @@
         </div>
         <template v-else
             ><div
-                class="flex flex-col gap-4 rounded-lg border border-slate-200 bg-white p-4 sm:flex-row sm:items-center sm:justify-between"
+                class="surface-card flex flex-col gap-4 rounded-lg border border-slate-200 bg-white p-4 sm:flex-row sm:items-center sm:justify-between"
             >
                 <div class="flex flex-wrap items-center gap-3">
                     <StatusBadge :status="order.status" /><span class="text-sm text-slate-600"
@@ -31,7 +31,7 @@
                     <router-link
                         v-if="order.allowed_actions.create_return"
                         :to="{ name: 'sales-return-create', query: { sales_order_id: order.id } }"
-                        class="min-h-10 rounded-md bg-[#1E5AA8] px-3 py-2 text-sm font-semibold text-white"
+                        class="min-h-10 rounded-md bg-primary-app px-3 py-2 text-sm font-semibold text-white"
                         >Record return</router-link
                     ><router-link
                         v-if="order.allowed_actions.edit"
@@ -56,7 +56,9 @@
                 </div>
             </div>
             <div class="grid gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(260px,1fr)]">
-                <div class="overflow-hidden rounded-lg border border-slate-200 bg-white">
+                <div
+                    class="surface-card overflow-hidden rounded-lg border border-slate-200 bg-white"
+                >
                     <h2 class="border-b px-4 py-3 font-semibold">Items</h2>
                     <div class="divide-y divide-slate-100">
                         <div
@@ -86,7 +88,7 @@
                     </div>
                 </div>
                 <div class="space-y-4">
-                    <div class="rounded-lg border border-slate-200 bg-white p-4">
+                    <div class="surface-card rounded-lg border border-slate-200 bg-white p-4">
                         <h2 class="mb-3 font-semibold">Order total</h2>
                         <dl class="space-y-2 text-sm">
                             <div class="flex justify-between">
@@ -107,7 +109,9 @@
                             </div>
                         </dl>
                     </div>
-                    <div class="rounded-lg border border-slate-200 bg-white p-4 text-sm">
+                    <div
+                        class="surface-card rounded-lg border border-slate-200 bg-white p-4 text-sm"
+                    >
                         <h2 class="mb-2 font-semibold">Order details</h2>
                         <p>Created by {{ order.creator?.name || 'Unknown' }}</p>
                         <p v-if="order.confirmer" class="mt-1">
@@ -124,7 +128,7 @@
             </div>
             <div
                 v-if="order.returns?.length"
-                class="overflow-hidden rounded-lg border border-slate-200 bg-white"
+                class="surface-card overflow-hidden rounded-lg border border-slate-200 bg-white"
             >
                 <h2 class="border-b px-4 py-3 font-semibold">Customer returns</h2>
                 <div class="divide-y divide-slate-100">
@@ -134,7 +138,7 @@
                         :to="{ name: 'sales-return-detail', params: { id: returnRow.id } }"
                         class="flex flex-wrap items-center justify-between gap-2 p-4 text-sm hover:bg-slate-50"
                     >
-                        <span class="font-semibold text-[#1E5AA8]">{{
+                        <span class="font-semibold text-primary-app">{{
                             returnRow.return_number
                         }}</span>
                         <span

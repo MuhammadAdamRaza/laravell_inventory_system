@@ -36,6 +36,11 @@ const routes = [
                 redirect: { name: 'dashboard' },
             },
             {
+                path: 'forbidden',
+                name: 'access-denied',
+                component: () => import('../views/system/AccessDeniedView.vue'),
+            },
+            {
                 path: 'dashboard',
                 name: 'dashboard',
                 component: () => import('../views/reports/DashboardView.vue'),
@@ -283,13 +288,48 @@ router.beforeEach(async (to, from, next) => {
     }
 
     if (to.meta.permission && !authStore.hasPermission(to.meta.permission)) {
-        if (authStore.hasPermission('inventory.view')) {
-            return next({ name: 'inventory-balances' });
-        }
-        return next(false);
+        return next({ name: 'access-denied', query: { from: to.fullPath } });
     }
 
     next();
+});
+
+// Handle stale Vite chunk files from previous builds (reloads the page to load fresh assets)
+if (typeof window !== 'undefined') {
+    window.addEventListener('vite:preloadError', (event) => {
+        event.preventDefault();
+        window.location.reload();
+    });
+}
+
+router.onError((error, to) => {
+    const isChunkLoadFailed =
+        error?.message?.includes('Failed to fetch dynamically imported module') ||
+        error?.message?.includes('Importing a module script failed') ||
+        error?.message?.includes('error loading dynamically imported module') ||
+        error?.name === 'ChunkLoadError';
+
+    if (isChunkLoadFailed) {
+        const targetUrl = to?.fullPath || window.location.href;
+        const reloadKey = 'vite_chunk_reload_' + (to?.path || window.location.pathname);
+        if (!sessionStorage.getItem(reloadKey)) {
+            sessionStorage.setItem(reloadKey, 'true');
+            window.location.href = targetUrl;
+        }
+    }
+});
+
+router.afterEach(() => {
+    try {
+        for (let i = sessionStorage.length - 1; i >= 0; i--) {
+            const key = sessionStorage.key(i);
+            if (key && key.startsWith('vite_chunk_reload_')) {
+                sessionStorage.removeItem(key);
+            }
+        }
+    } catch {
+        // Ignore storage access errors
+    }
 });
 
 export default router;

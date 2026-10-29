@@ -19,7 +19,7 @@
         </div>
         <template v-else-if="customer"
             ><div
-                class="grid gap-3 rounded-lg border border-slate-200 bg-white p-4 text-sm sm:grid-cols-2 lg:grid-cols-4"
+                class="surface-card grid gap-3 rounded-lg border border-slate-200 bg-white p-4 text-sm sm:grid-cols-2 lg:grid-cols-4"
             >
                 <div>
                     <span class="text-slate-500">Phone</span>
@@ -44,7 +44,7 @@
             </div>
             <div
                 v-if="orders.length"
-                class="overflow-hidden rounded-lg border border-slate-200 bg-white"
+                class="surface-card overflow-hidden rounded-lg border border-slate-200 bg-white"
             >
                 <div class="hidden overflow-x-auto md:block">
                     <table class="w-full text-left text-sm">
@@ -61,7 +61,7 @@
                             <tr v-for="order in orders" :key="order.id">
                                 <td class="px-4 py-3">
                                     <router-link
-                                        class="font-semibold text-[#1E5AA8]"
+                                        class="font-semibold text-primary-app"
                                         :to="{
                                             name: 'sales-order-detail',
                                             params: { id: order.id },
@@ -84,7 +84,7 @@
                         :to="{ name: 'sales-order-detail', params: { id: order.id } }"
                         class="block space-y-2 p-4"
                         ><div class="flex justify-between gap-2">
-                            <b class="text-[#1E5AA8]">{{ order.order_number }}</b
+                            <b class="text-primary-app">{{ order.order_number }}</b
                             ><StatusBadge :status="order.status" />
                         </div>
                         <div class="flex justify-between text-sm text-slate-500">
@@ -96,7 +96,7 @@
             </div>
             <p
                 v-else
-                class="rounded-lg border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-500"
+                class="surface-card rounded-lg border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-500"
             >
                 No sales orders for this customer yet.
             </p>

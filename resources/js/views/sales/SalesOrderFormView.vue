@@ -18,7 +18,9 @@
             Loading order form...
         </div>
         <form v-else class="space-y-5" @submit.prevent="save">
-            <div class="grid gap-4 rounded-lg border border-slate-200 bg-white p-4 sm:grid-cols-2">
+            <div
+                class="surface-card grid gap-4 rounded-lg border border-slate-200 bg-white p-4 sm:grid-cols-2"
+            >
                 <label class="text-sm font-medium"
                     >Customer *
                     <div class="mt-1 flex gap-2">
@@ -82,7 +84,7 @@
                 </label>
             </div>
 
-            <div class="overflow-hidden rounded-lg border border-slate-200 bg-white">
+            <div class="surface-card overflow-hidden rounded-lg border border-slate-200 bg-white">
                 <div class="flex items-center justify-between gap-3 border-b px-4 py-3">
                     <div>
                         <h2 class="font-semibold">Items</h2>
@@ -264,7 +266,7 @@
                         errors.discount_amount[0]
                     }}</span></label
                 >
-                <div class="rounded-lg border border-slate-200 bg-white p-4">
+                <div class="surface-card rounded-lg border border-slate-200 bg-white p-4">
                     <h2 class="mb-3 font-semibold">Order summary</h2>
                     <dl class="space-y-2 text-sm">
                         <div class="flex justify-between">
@@ -296,7 +298,7 @@
                     >Cancel</router-link
                 ><button
                     :disabled="saving"
-                    class="min-h-11 rounded-md bg-[#1E5AA8] px-5 py-2 text-sm font-semibold text-white disabled:opacity-50"
+                    class="min-h-11 rounded-md bg-primary-app px-5 py-2 text-sm font-semibold text-white disabled:opacity-50"
                 >
                     {{ saving ? 'Saving…' : editing ? 'Save draft' : 'Create draft' }}
                 </button>
@@ -344,7 +346,7 @@
                         Cancel</button
                     ><button
                         :disabled="quickSaving"
-                        class="min-h-11 rounded bg-[#1E5AA8] px-4 text-white"
+                        class="min-h-11 rounded bg-primary-app px-4 text-white"
                     >
                         {{ quickSaving ? 'Saving…' : 'Add customer' }}
                     </button>

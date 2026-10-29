@@ -80,17 +80,22 @@ export const useAuthStore = defineStore("auth", () => {
         return res.data;
     };
 
+    const clearSession = () => {
+        clearTabToken();
+        user.value = null;
+        role.value = null;
+        roles.value = [];
+        permissions.value = [];
+        assignedWarehouseIds.value = [];
+        isInitialized.value = true;
+        loading.value = false;
+    };
+
     const logout = async () => {
         try {
             await api.post("/api/logout");
         } finally {
-            clearTabToken();
-            user.value = null;
-            role.value = null;
-            roles.value = [];
-            permissions.value = [];
-            assignedWarehouseIds.value = [];
-            isInitialized.value = true;
+            clearSession();
         }
     };
 
@@ -109,5 +114,6 @@ export const useAuthStore = defineStore("auth", () => {
         register,
         login,
         logout,
+        clearSession,
     };
 });

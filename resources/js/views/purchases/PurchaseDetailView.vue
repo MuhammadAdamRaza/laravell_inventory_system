@@ -20,7 +20,7 @@
         </div>
         <template v-else>
             <div
-                class="flex flex-col gap-4 rounded-lg border border-slate-200 bg-white p-4 sm:flex-row sm:items-center sm:justify-between"
+                class="surface-card flex flex-col gap-4 rounded-lg border border-slate-200 bg-white p-4 sm:flex-row sm:items-center sm:justify-between"
             >
                 <div class="flex flex-wrap items-center gap-3">
                     <StatusBadge :status="purchase.status" /><span class="text-sm text-slate-600"
@@ -39,7 +39,7 @@
                         v-if="purchase.allowed_actions.submit"
                         :disabled="busy"
                         @click="perform('submit')"
-                        class="rounded-md bg-[#1E5AA8] px-3 py-2 text-sm font-semibold text-white"
+                        class="rounded-md bg-primary-app px-3 py-2 text-sm font-semibold text-white"
                     >
                         Submit for approval
                     </button>
@@ -63,7 +63,7 @@
                         v-if="purchase.allowed_actions.receive"
                         :disabled="busy"
                         @click="openReceive"
-                        class="rounded-md bg-[#1E5AA8] px-3 py-2 text-sm font-semibold text-white"
+                        class="rounded-md bg-primary-app px-3 py-2 text-sm font-semibold text-white"
                     >
                         Receive stock
                     </button>
@@ -84,7 +84,9 @@
                 Returned for changes: {{ purchase.rejection_reason }}
             </div>
             <div class="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(250px,1fr)]">
-                <div class="overflow-hidden rounded-lg border border-slate-200 bg-white">
+                <div
+                    class="surface-card overflow-hidden rounded-lg border border-slate-200 bg-white"
+                >
                     <h2 class="border-b border-slate-200 px-4 py-3 font-semibold">Items</h2>
                     <div class="divide-y divide-slate-100">
                         <div
@@ -112,7 +114,7 @@
                     </div>
                 </div>
                 <div class="space-y-4">
-                    <div class="rounded-lg border border-slate-200 bg-white p-4">
+                    <div class="surface-card rounded-lg border border-slate-200 bg-white p-4">
                         <h2 class="mb-3 font-semibold">Order total</h2>
                         <dl class="space-y-2 text-sm">
                             <div class="flex justify-between">
@@ -133,7 +135,9 @@
                             </div>
                         </dl>
                     </div>
-                    <div class="rounded-lg border border-slate-200 bg-white p-4 text-sm">
+                    <div
+                        class="surface-card rounded-lg border border-slate-200 bg-white p-4 text-sm"
+                    >
                         <h2 class="mb-2 font-semibold">Delivery</h2>
                         <p>Expected: {{ purchase.expected_date || 'Not set' }}</p>
                         <p class="mt-1 text-slate-500">
@@ -145,7 +149,7 @@
                     </div>
                 </div>
             </div>
-            <div class="rounded-lg border border-slate-200 bg-white p-4">
+            <div class="surface-card rounded-lg border border-slate-200 bg-white p-4">
                 <h2 class="mb-3 font-semibold">Receipts</h2>
                 <p v-if="!purchase.receipts?.length" class="text-sm text-slate-500">
                     No deliveries recorded yet.
@@ -218,7 +222,7 @@
                         Close</button
                     ><button
                         :disabled="busy"
-                        class="rounded-md bg-[#1E5AA8] px-4 py-2 font-semibold text-white"
+                        class="rounded-md bg-primary-app px-4 py-2 font-semibold text-white"
                     >
                         Review receipt
                     </button>

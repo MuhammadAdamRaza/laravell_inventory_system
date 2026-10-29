@@ -17,7 +17,7 @@
             <article
                 v-for="card in cards"
                 :key="card.label"
-                class="rounded-lg border border-slate-200 bg-white p-4"
+                class="surface-card rounded-lg border border-slate-200 bg-white p-4"
             >
                 <p class="text-xs uppercase tracking-wide text-slate-500">{{ card.label }}</p>
                 <p class="mt-2 text-xl font-semibold">
@@ -26,7 +26,7 @@
             </article>
         </div>
         <div class="grid grid-cols-1 gap-5 lg:grid-cols-[2fr_1fr]">
-            <div class="overflow-hidden rounded-lg border border-slate-200 bg-white">
+            <div class="surface-card overflow-hidden rounded-lg border border-slate-200 bg-white">
                 <h2 class="border-b p-4 font-semibold">Purchase history</h2>
                 <div v-if="history.length === 0" class="p-6 text-sm text-slate-500">
                     No purchases for this supplier.
@@ -39,7 +39,7 @@
                     <div>
                         <router-link
                             :to="{ name: 'purchase-detail', params: { id: item.id } }"
-                            class="font-semibold text-[#1E5AA8] hover:underline"
+                            class="font-semibold text-primary-app hover:underline"
                             >{{ item.purchase_number }}</router-link
                         >
                         <p class="text-xs text-slate-500">
@@ -56,7 +56,7 @@
             </div>
             <form
                 v-if="auth.hasPermission('suppliers.manage')"
-                class="h-fit space-y-3 rounded-lg border border-slate-200 bg-white p-4"
+                class="surface-card h-fit space-y-3 rounded-lg border border-slate-200 bg-white p-4"
                 @submit.prevent="recordPayment"
             >
                 <h2 class="font-semibold">Record supplier payment</h2>
@@ -82,7 +82,7 @@
                 /></label>
                 <button
                     :disabled="saving"
-                    class="min-h-11 w-full rounded-md bg-[#1E5AA8] px-4 font-semibold text-white disabled:opacity-50"
+                    class="min-h-11 w-full rounded-md bg-primary-app px-4 font-semibold text-white disabled:opacity-50"
                 >
                     {{ saving ? 'Saving...' : 'Save payment' }}
                 </button>

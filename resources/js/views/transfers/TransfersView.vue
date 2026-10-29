@@ -7,12 +7,12 @@
                 ><router-link
                     v-if="auth.hasPermission('transfers.create')"
                     :to="{ name: 'transfer-create' }"
-                    class="min-h-11 rounded-md bg-[#1E5AA8] px-4 py-2 text-sm font-semibold text-white"
+                    class="min-h-11 rounded-md bg-primary-app px-4 py-2 text-sm font-semibold text-white"
                     >New transfer</router-link
                 ></template
             ></PageHeader
         >
-        <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-7">
+        <div class="filter-bar grid gap-3 sm:grid-cols-2 xl:grid-cols-7">
             <input
                 v-model="search"
                 placeholder="Search transfer number"
@@ -67,11 +67,11 @@
         </div>
         <div
             v-else-if="!rows.length"
-            class="rounded-lg border border-dashed bg-white p-10 text-center text-sm text-slate-500"
+            class="surface-card rounded-lg border border-dashed bg-white p-10 text-center text-sm text-slate-500"
         >
             No transfers found.
         </div>
-        <div v-else class="overflow-hidden rounded-lg border border-[#DDE3EA] bg-white">
+        <div v-else class="surface-card overflow-hidden rounded-lg border border-app bg-white">
             <div class="hidden overflow-x-auto md:block">
                 <table class="w-full text-left text-sm">
                     <thead class="bg-slate-50 text-xs uppercase text-slate-500">
@@ -91,7 +91,7 @@
                         <tr v-for="row in rows" :key="row.id">
                             <td class="px-4 py-3">
                                 <router-link
-                                    class="font-semibold text-[#1E5AA8]"
+                                    class="font-semibold text-primary-app"
                                     :to="{ name: 'transfer-detail', params: { id: row.id } }"
                                     >{{ row.transfer_number }}</router-link
                                 >
@@ -111,7 +111,7 @@
                     :to="{ name: 'transfer-detail', params: { id: row.id } }"
                     class="block space-y-2 p-4"
                     ><div class="flex justify-between gap-2">
-                        <b class="text-[#1E5AA8]">{{ row.transfer_number }}</b
+                        <b class="text-primary-app">{{ row.transfer_number }}</b
                         ><StatusBadge :status="row.status" />
                     </div>
                     <p class="text-sm text-slate-700">

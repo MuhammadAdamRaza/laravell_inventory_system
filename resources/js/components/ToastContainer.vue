@@ -1,98 +1,51 @@
 <template>
     <div
-        class="fixed top-4 right-4 z-50 flex flex-col space-y-2 pointer-events-none max-w-sm w-full px-4 sm:px-0"
+        class="pointer-events-none fixed inset-x-4 bottom-4 z-[90] flex max-w-sm flex-col gap-2 sm:left-auto sm:right-5 sm:w-full"
+        aria-live="polite"
+        aria-atomic="false"
     >
-        <transition-group
-            enter-active-class="transform ease-out duration-300 transition"
-            enter-from-class="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
-            enter-to-class="translate-y-0 opacity-100 sm:translate-x-0"
-            leave-active-class="transition ease-in duration-100"
-            leave-from-class="opacity-100"
-            leave-to-class="opacity-0"
-        >
-            <div
+        <TransitionGroup name="popover"
+            ><div
                 v-for="toast in toastStore.toasts"
                 :key="toast.id"
-                :class="[
-                    'pointer-events-auto flex items-center justify-between p-4 rounded-lg shadow-md border text-sm font-medium',
-                    toast.type === 'success'
-                        ? 'bg-[#E6F4EA] border-[#1E7B3A]/30 text-[#1E7B3A]'
-                        : toast.type === 'error'
-                          ? 'bg-[#FDE8E8] border-[#B42318]/30 text-[#B42318]'
-                          : 'bg-[#E8F1FD] border-[#1E5AA8]/30 text-[#1E5AA8]',
-                ]"
+                class="pointer-events-auto flex items-start gap-3 rounded-xl border border-app bg-white p-4 shadow-lg"
+                :role="toast.type === 'error' ? 'alert' : 'status'"
             >
-                <div class="flex items-center space-x-2">
-                    <svg
-                        v-if="toast.type === 'success'"
-                        class="w-5 h-5 flex-shrink-0"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M5 13l4 4L19 7"
-                        />
-                    </svg>
-                    <svg
-                        v-else-if="toast.type === 'error'"
-                        class="w-5 h-5 flex-shrink-0"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                    </svg>
-                    <svg
-                        v-else
-                        class="w-5 h-5 flex-shrink-0"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                    </svg>
-                    <span>{{ toast.message }}</span>
-                </div>
+                <span
+                    class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
+                    :class="
+                        toast.type === 'error'
+                            ? 'bg-rose-50 text-rose-600'
+                            : toast.type === 'success'
+                              ? 'bg-emerald-50 text-emerald-600'
+                              : 'bg-blue-50 text-primary-app'
+                    "
+                    ><AppIcon
+                        :name="
+                            toast.type === 'error'
+                                ? 'alert'
+                                : toast.type === 'success'
+                                  ? 'check'
+                                  : 'bell'
+                        "
+                        class="h-4 w-4"
+                /></span>
+                <p class="min-w-0 flex-1 self-center break-words text-xs leading-relaxed text-main">
+                    {{ toast.message }}
+                </p>
                 <button
                     type="button"
-                    class="ml-3 inline-flex text-current opacity-70 hover:opacity-100"
+                    class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-muted hover:bg-slate-50"
+                    aria-label="Dismiss notification"
                     @click="toastStore.remove(toast.id)"
                 >
-                    <svg
-                        class="w-4 h-4"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M6 18L18 6M6 6l12 12"
-                        />
-                    </svg>
-                </button>
-            </div>
-        </transition-group>
+                    <AppIcon name="close" class="h-4 w-4" />
+                </button></div
+        ></TransitionGroup>
     </div>
 </template>
-
 <script setup>
-import { useToastStore } from "../stores/toast";
-
+import { useToastStore } from '../stores/toast';
+import AppIcon from './AppIcon.vue';
 const toastStore = useToastStore();
 </script>

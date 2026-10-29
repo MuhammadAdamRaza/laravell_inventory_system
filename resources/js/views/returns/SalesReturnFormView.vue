@@ -16,12 +16,14 @@
         </p>
         <div
             v-if="loading"
-            class="rounded-lg border bg-white p-8 text-center text-sm text-slate-500"
+            class="surface-card rounded-lg border bg-white p-8 text-center text-sm text-slate-500"
         >
             Loading return details
         </div>
         <form v-else class="space-y-5" @submit.prevent="save">
-            <div class="grid gap-4 rounded-lg border border-slate-200 bg-white p-4 sm:grid-cols-2">
+            <div
+                class="surface-card grid gap-4 rounded-lg border border-slate-200 bg-white p-4 sm:grid-cols-2"
+            >
                 <label v-if="!isEditing" class="text-sm font-medium text-slate-700"
                     >Confirmed sales order <span class="text-red-600">*</span
                     ><select
@@ -58,7 +60,7 @@
                     ></textarea>
                 </label>
             </div>
-            <div class="overflow-hidden rounded-lg border border-slate-200 bg-white">
+            <div class="surface-card overflow-hidden rounded-lg border border-slate-200 bg-white">
                 <div class="border-b px-4 py-3">
                     <h2 class="font-semibold text-slate-900">Returned items</h2>
                     <p class="mt-1 text-xs text-slate-500">
@@ -79,7 +81,7 @@
                             ><input
                                 v-model="line.selected"
                                 type="checkbox"
-                                class="mt-1 size-4 rounded border-slate-300 text-[#1E5AA8]"
+                                class="mt-1 size-4 rounded border-slate-300 text-primary-app"
                             /><span class="min-w-0 flex-1"
                                 ><span class="block font-medium">{{ line.name }}</span
                                 ><span class="block text-xs text-slate-500"
@@ -131,7 +133,7 @@
                                     v-model="line.restock_eligible"
                                     type="checkbox"
                                     :disabled="!['new_unopened', 'opened'].includes(line.condition)"
-                                    class="size-4 rounded border-slate-300 text-[#1E5AA8]"
+                                    class="size-4 rounded border-slate-300 text-primary-app"
                                 />Return to sellable stock</label
                             >
                         </div>
@@ -145,7 +147,7 @@
                     >Cancel</router-link
                 ><button
                     :disabled="saving || !selectedLines.length"
-                    class="min-h-11 rounded-md bg-[#1E5AA8] px-5 text-sm font-semibold text-white disabled:opacity-50"
+                    class="min-h-11 rounded-md bg-primary-app px-5 text-sm font-semibold text-white disabled:opacity-50"
                 >
                     {{ saving ? 'Saving' : isEditing ? 'Save draft' : 'Create return draft' }}
                 </button>

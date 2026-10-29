@@ -1,55 +1,37 @@
 <template>
-    <div class="space-y-1.5">
-        <label v-if="label" :for="id" class="block text-[13px] font-medium text-[#637083]">
-            {{ label }}
-            <span v-if="required" class="text-[#B42318]">*</span>
-        </label>
-
-        <div>
-            <slot :has-error="!!error" :input-class="inputClasses"></slot>
-        </div>
-
-        <p v-if="error" class="text-xs text-[#B42318] mt-1">
-            {{ error }}
+    <div class="space-y-2">
+        <label v-if="label" :for="id" class="block text-xs font-semibold text-main"
+            >{{ label }}
+            <span v-if="required" class="text-red-600" aria-hidden="true">*</span></label
+        >
+        <slot
+            :has-error="!!errorText"
+            :input-class="inputClasses"
+            :input-attrs="{
+                'aria-invalid': !!errorText,
+                'aria-describedby': errorText || hint ? `${id}-help` : undefined,
+            }"
+        />
+        <p v-if="errorText" :id="`${id}-help`" class="text-xs text-red-700" role="alert">
+            {{ errorText }}
         </p>
-        <p v-else-if="hint" class="text-xs text-[#637083] mt-1">
+        <p v-else-if="hint" :id="`${id}-help`" class="text-xs leading-relaxed text-muted">
             {{ hint }}
         </p>
     </div>
 </template>
-
 <script setup>
 import { computed } from 'vue';
-
 const props = defineProps({
-    label: {
-        type: String,
-        default: '',
-    },
-    id: {
-        type: String,
-        default: '',
-    },
-    required: {
-        type: Boolean,
-        default: false,
-    },
-    error: {
-        type: String,
-        default: '',
-    },
-    hint: {
-        type: String,
-        default: '',
-    },
+    label: { type: String, default: '' },
+    id: { type: String, default: '' },
+    required: { type: Boolean, default: false },
+    error: { type: [String, Array], default: '' },
+    hint: { type: String, default: '' },
 });
-
-const inputClasses = computed(() => {
-    const base =
-        'w-full px-3 py-2 text-sm bg-white rounded-md border min-h-[44px] transition-colors focus:outline-none';
-    if (props.error) {
-        return `${base} border-[#B42318] focus:ring-1 focus:ring-[#B42318] text-[#1F2933]`;
-    }
-    return `${base} border-[#DDE3EA] focus:border-[#1E5AA8] focus:ring-1 focus:ring-[#1E5AA8] text-[#1F2933]`;
-});
+const errorText = computed(() => (Array.isArray(props.error) ? props.error[0] : props.error));
+const inputClasses = computed(
+    () =>
+        `w-full rounded-lg border bg-white px-3.5 py-2.5 text-sm text-main min-h-[44px] transition-colors focus:outline-none ${errorText.value ? 'border-red-500 focus:ring-2 focus:ring-red-100' : 'border-app focus:border-blue-500 focus:ring-2 focus:ring-blue-100'}`,
+);
 </script>

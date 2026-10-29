@@ -17,7 +17,7 @@
         <div v-else-if="!adjustment" class="rounded bg-white p-8 text-center text-slate-500">
             Loading adjustment...
         </div>
-        <div v-else class="space-y-4 rounded-lg border bg-white p-4 sm:p-6">
+        <div v-else class="surface-card space-y-4 rounded-lg border bg-white p-4 sm:p-6">
             <dl class="grid gap-4 text-sm sm:grid-cols-2">
                 <div>
                     <dt class="text-slate-500">Product</dt>

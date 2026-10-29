@@ -19,7 +19,7 @@
         </div>
         <form
             v-else
-            class="space-y-5 rounded-lg border bg-white p-4 sm:p-6"
+            class="surface-card space-y-5 rounded-lg border bg-white p-4 sm:p-6"
             @submit.prevent="confirmOpen = true"
         >
             <label class="block text-sm"
@@ -97,7 +97,7 @@
                     >Cancel</router-link
                 ><button
                     :disabled="saving"
-                    class="min-h-11 rounded bg-[#1E5AA8] px-5 py-2 font-semibold text-white disabled:opacity-50"
+                    class="min-h-11 rounded bg-primary-app px-5 py-2 font-semibold text-white disabled:opacity-50"
                 >
                     Review adjustment
                 </button>

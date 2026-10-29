@@ -7,7 +7,7 @@
             <template #actions>
                 <button
                     type="button"
-                    class="inline-flex items-center px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-[#1E5AA8] hover:bg-[#174A8A] min-h-[44px] transition-colors"
+                    class="inline-flex items-center px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-primary-app bg-primary-hover min-h-[44px] transition-colors"
                     @click="openCreateModal"
                 >
                     <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -25,7 +25,7 @@
 
         <!-- Filters Bar -->
         <div
-            class="mb-4 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between"
+            class="filter-bar mb-4 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between"
         >
             <SearchInput
                 v-model="search"
@@ -36,7 +36,7 @@
             <div class="flex items-center space-x-3">
                 <select
                     v-model="roleFilter"
-                    class="px-3 py-2 bg-white border border-[#DDE3EA] rounded-md text-sm text-[#1F2933] min-h-[44px] focus:outline-none focus:ring-1 focus:ring-[#1E5AA8]"
+                    class="px-3 py-2 bg-white border border-app rounded-md text-sm text-main min-h-[44px] focus:outline-none focus:ring-1 focus:ring-[#1E5AA8]"
                     @change="fetchUsers(1)"
                 >
                     <option value="">All Roles</option>
@@ -55,14 +55,14 @@
         >
             <template #user="{ row }">
                 <div>
-                    <p class="font-medium text-[#1F2933]">{{ row.name }}</p>
-                    <p class="text-xs text-[#637083]">{{ row.email }}</p>
+                    <p class="font-medium text-main">{{ row.name }}</p>
+                    <p class="text-xs text-muted">{{ row.email }}</p>
                 </div>
             </template>
 
             <template #role="{ row }">
                 <span
-                    class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-[#EAF2FB] text-[#1E5AA8]"
+                    class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-[#EAF2FB] text-primary-app"
                 >
                     {{ row.role || 'No Role' }}
                 </span>
@@ -76,7 +76,7 @@
                 <div class="flex items-center space-x-2">
                     <button
                         type="button"
-                        class="text-[#1E5AA8] hover:text-[#174A8A] font-medium text-xs py-1 px-2 rounded hover:bg-[#EAF2FB] min-h-[32px]"
+                        class="text-primary-app hover:text-[#174A8A] font-medium text-xs py-1 px-2 rounded hover:bg-[#EAF2FB] min-h-[32px]"
                         @click="openEditModal(row)"
                     >
                         Edit
@@ -108,13 +108,13 @@
                 <div
                     class="relative bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-lg sm:w-full p-6 space-y-4"
                 >
-                    <div class="flex justify-between items-center border-b border-[#DDE3EA] pb-3">
-                        <h3 class="text-lg font-semibold text-[#1F2933]">
+                    <div class="flex justify-between items-center border-b border-app pb-3">
+                        <h3 class="text-lg font-semibold text-main">
                             {{ isEditing ? 'Edit User' : 'Create User & Assign Role' }}
                         </h3>
                         <button
                             type="button"
-                            class="text-[#637083] hover:text-[#1F2933]"
+                            class="text-muted hover:text-main"
                             @click="closeModal"
                         >
                             <svg
@@ -187,7 +187,7 @@
                                     />
                                     <button
                                         type="button"
-                                        class="absolute inset-y-0 right-0 pr-3 flex items-center text-[#637083] hover:text-[#1F2933] focus:outline-none min-h-[44px]"
+                                        class="absolute inset-y-0 right-0 pr-3 flex items-center text-muted hover:text-main focus:outline-none min-h-[44px]"
                                         @click="showPassword = !showPassword"
                                     >
                                         <svg
@@ -212,7 +212,7 @@
                                         </svg>
                                         <svg
                                             v-else
-                                            class="w-5 h-5 text-[#1E5AA8]"
+                                            class="w-5 h-5 text-primary-app"
                                             fill="none"
                                             viewBox="0 0 24 24"
                                             stroke="currentColor"
@@ -267,32 +267,32 @@
 
                         <!-- Assigned Warehouses (Especially for Warehouse Staff) -->
                         <div>
-                            <label class="block text-[13px] font-medium text-[#637083] mb-1.5">
+                            <label class="block text-[13px] font-medium text-muted mb-1.5">
                                 Assigned Warehouses (Required for Warehouse Staff isolation)
                             </label>
                             <div
-                                class="space-y-1 max-h-32 overflow-y-auto p-2 border border-[#DDE3EA] rounded-md bg-[#F5F7FA]"
+                                class="space-y-1 max-h-32 overflow-y-auto p-2 border border-app rounded-md bg-app-bg"
                             >
                                 <label
                                     v-for="wh in warehousesList"
                                     :key="wh.id"
-                                    class="flex items-center space-x-2 text-sm text-[#1F2933]"
+                                    class="flex items-center space-x-2 text-sm text-main"
                                 >
                                     <input
                                         type="checkbox"
                                         :value="wh.id"
                                         v-model="form.warehouse_ids"
-                                        class="rounded border-[#DDE3EA] text-[#1E5AA8] focus:ring-[#1E5AA8]"
+                                        class="rounded border-app text-primary-app focus:ring-[#1E5AA8]"
                                     />
                                     <span>{{ wh.name }}</span>
                                 </label>
                             </div>
                         </div>
 
-                        <div class="flex justify-end space-x-3 pt-3 border-t border-[#DDE3EA]">
+                        <div class="flex justify-end space-x-3 pt-3 border-t border-app">
                             <button
                                 type="button"
-                                class="px-4 py-2 border border-[#DDE3EA] rounded-md text-sm font-medium text-[#1F2933] bg-white hover:bg-[#F7F9FC] min-h-[44px]"
+                                class="px-4 py-2 border border-app rounded-md text-sm font-medium text-main bg-white bg-hover-surface min-h-[44px]"
                                 @click="closeModal"
                             >
                                 Cancel
@@ -300,7 +300,7 @@
                             <button
                                 type="submit"
                                 :disabled="saving"
-                                class="px-4 py-2 rounded-md text-sm font-medium text-white bg-[#1E5AA8] hover:bg-[#174A8A] disabled:opacity-50 min-h-[44px] transition-colors"
+                                class="px-4 py-2 rounded-md text-sm font-medium text-white bg-primary-app bg-primary-hover disabled:opacity-50 min-h-[44px] transition-colors"
                             >
                                 {{
                                     saving ? 'Saving...' : isEditing ? 'Update User' : 'Create User'

@@ -12,22 +12,22 @@
                 <router-link
                     v-if="auth.hasPermission('purchases.create')"
                     :to="{ name: 'purchase-create' }"
-                    class="rounded-md bg-[#1E5AA8] px-4 py-2 text-sm font-semibold text-white hover:bg-[#174A8A]"
+                    class="rounded-md bg-primary-app px-4 py-2 text-sm font-semibold text-white bg-primary-hover"
                     >New purchase</router-link
                 >
             </template>
         </PageHeader>
-        <div class="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
+        <div class="filter-bar grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
             <input
                 v-model="search"
                 @input="fetch(1)"
                 placeholder="Search purchase or supplier"
-                class="min-h-11 rounded-md border border-[#DDE3EA] px-3 text-sm"
+                class="min-h-11 rounded-md border border-app px-3 text-sm"
             />
             <select
                 v-model="status"
                 @change="fetch(1)"
-                class="min-h-11 rounded-md border border-[#DDE3EA] bg-white px-3 text-sm"
+                class="min-h-11 rounded-md border border-app bg-white px-3 text-sm"
             >
                 <option value="">All statuses</option>
                 <option v-for="item in statuses" :key="item" :value="item">
@@ -39,14 +39,14 @@
                     v-model="dateFrom"
                     type="date"
                     @change="fetch(1)"
-                    class="mt-1 min-h-11 w-full rounded-md border border-[#DDE3EA] px-3 text-sm text-slate-800"
+                    class="mt-1 min-h-11 w-full rounded-md border border-app px-3 text-sm text-slate-800"
             /></label>
             <label class="text-xs text-slate-500"
                 >To<input
                     v-model="dateTo"
                     type="date"
                     @change="fetch(1)"
-                    class="mt-1 min-h-11 w-full rounded-md border border-[#DDE3EA] px-3 text-sm text-slate-800"
+                    class="mt-1 min-h-11 w-full rounded-md border border-app px-3 text-sm text-slate-800"
             /></label>
         </div>
         <div
@@ -65,7 +65,7 @@
         >
             No purchase orders found.
         </div>
-        <div v-else class="overflow-hidden rounded-lg border border-[#DDE3EA] bg-white">
+        <div v-else class="surface-card overflow-hidden rounded-lg border border-app bg-white">
             <div class="hidden overflow-x-auto md:block">
                 <table class="w-full text-left text-sm">
                     <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
@@ -90,7 +90,7 @@
                         <tr v-for="row in rows" :key="row.id" class="hover:bg-slate-50">
                             <td class="px-4 py-3">
                                 <router-link
-                                    class="font-semibold text-[#1E5AA8] hover:underline"
+                                    class="font-semibold text-primary-app hover:underline"
                                     :to="{ name: 'purchase-detail', params: { id: row.id } }"
                                     >{{ row.purchase_number }}</router-link
                                 >
@@ -111,7 +111,7 @@
                     :to="{ name: 'purchase-detail', params: { id: row.id } }"
                     class="block space-y-2 p-4 hover:bg-slate-50"
                     ><div class="flex items-center justify-between gap-2">
-                        <strong class="text-[#1E5AA8]">{{ row.purchase_number }}</strong
+                        <strong class="text-primary-app">{{ row.purchase_number }}</strong
                         ><StatusBadge :status="row.status" />
                     </div>
                     <p class="text-sm text-slate-700">
@@ -155,7 +155,7 @@ const statuses = [
 ];
 const page = reactive({ current_page: 1, last_page: 1, total: 0, from: 0, to: 0 });
 function sortMarker(field) {
-    return sortBy.value === field ? (sortDirection.value === 'asc' ? 'ï¿½' : 'ï¿½') : '';
+    return sortBy.value === field ? (sortDirection.value === 'asc' ? '\u2191' : '\u2193') : '';
 }
 function toggleSort(field) {
     if (sortBy.value === field)

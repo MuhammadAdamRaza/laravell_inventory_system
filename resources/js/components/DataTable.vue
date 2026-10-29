@@ -1,167 +1,144 @@
 <template>
-    <div class="w-full bg-white rounded-lg border border-[#DDE3EA] card-shadow overflow-hidden">
-        <!-- Error State -->
-        <div v-if="error" class="p-6 text-center text-[#B42318] bg-[#FDE8E8]/30">
-            <svg class="w-8 h-8 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                />
-            </svg>
-            <p class="font-medium text-sm">{{ error }}</p>
-            <button
-                type="button"
-                class="mt-3 inline-flex items-center px-3 py-1.5 border border-[#DDE3EA] rounded-md text-xs font-medium text-[#1F2933] bg-white hover:bg-[#F7F9FC]"
-                @click="$emit('retry')"
-            >
-                Retry
+    <div class="surface-card w-full overflow-hidden" :aria-busy="loading">
+        <div v-if="error" class="px-6 py-12 text-center" role="alert">
+            <AppIcon name="alert" class="mx-auto mb-3 h-8 w-8 text-red-600" />
+            <p class="text-sm font-medium text-main">{{ error }}</p>
+            <button type="button" class="ui-button mt-4" @click="$emit('retry')">
+                <AppIcon name="refresh" class="h-4 w-4" />Try again
             </button>
         </div>
-
-        <!-- Skeleton Loading -->
-        <div v-else-if="loading" class="p-4 space-y-4">
-            <div v-for="i in 5" :key="i" class="h-12 bg-gray-100 rounded animate-pulse"></div>
+        <div v-else-if="loading" class="space-y-5 p-5" role="status" aria-label="Loading records">
+            <div v-for="n in 5" :key="n" class="flex animate-pulse items-center gap-4">
+                <div class="h-10 w-10 rounded-lg bg-slate-100"></div>
+                <div class="flex-1 space-y-2">
+                    <div class="h-3 w-2/5 rounded bg-slate-100"></div>
+                    <div class="h-2.5 w-1/4 rounded bg-slate-100"></div>
+                </div>
+                <div class="h-6 w-16 rounded-full bg-slate-100"></div>
+            </div>
+            <span class="sr-only">Loading records...</span>
         </div>
-
-        <!-- Empty State -->
-        <div v-else-if="!rows || rows.length === 0" class="p-12 text-center text-[#637083]">
-            <svg
-                class="w-12 h-12 mx-auto mb-3 text-[#DDE3EA]"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-            >
-                <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="1.5"
-                    d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
-                />
-            </svg>
-            <h3 class="text-base font-medium text-[#1F2933]">No records found</h3>
-            <p class="text-sm mt-1">There is no data to display right now.</p>
+        <div v-else-if="!rows?.length" class="px-6 py-14 text-center">
+            <span
+                class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-slate-100 bg-slate-50 text-slate-400"
+                ><AppIcon name="box" class="h-7 w-7"
+            /></span>
+            <h3 class="text-sm font-semibold text-main">No records found</h3>
+            <p class="mt-1.5 text-xs text-muted">Try adjusting your search or filters.</p>
         </div>
-
-        <!-- Table Container (Horizontal scroll strictly bounded to table container) -->
-        <div v-else class="overflow-x-auto w-full">
-            <table class="w-full text-left text-sm divide-y divide-[#DDE3EA]">
-                <thead
-                    class="bg-[#F5F7FA] text-[#637083] font-medium text-xs uppercase tracking-wider"
+        <template v-else>
+            <div class="data-table-scroll hidden w-full md:block">
+                <table class="w-full text-left text-sm">
+                    <thead>
+                        <tr>
+                            <th
+                                v-for="col in columns"
+                                :key="col.key"
+                                scope="col"
+                                :class="col.class"
+                                :aria-sort="
+                                    col.sortable
+                                        ? sortKey === col.key
+                                            ? sortOrder === 'asc'
+                                                ? 'ascending'
+                                                : 'descending'
+                                            : 'none'
+                                        : undefined
+                                "
+                            >
+                                <button
+                                    v-if="col.sortable"
+                                    type="button"
+                                    class="inline-flex items-center gap-2 text-left uppercase"
+                                    :aria-label="`Sort by ${col.label}`"
+                                    @click="$emit('sort', col.key)"
+                                >
+                                    {{ col.label
+                                    }}<AppIcon
+                                        name="sort"
+                                        class="h-3 w-3"
+                                        :class="
+                                            sortKey === col.key ? 'text-primary-app' : 'opacity-40'
+                                        "
+                                    /></button
+                                ><span v-else>{{ col.label }}</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        <tr v-for="(row, index) in rows" :key="row.id ?? index">
+                            <td v-for="col in columns" :key="col.key" :class="col.cellClass">
+                                <slot :name="col.key" :row="row" :value="row[col.key]">{{
+                                    row[col.key]
+                                }}</slot>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="divide-y divide-slate-100 md:hidden">
+                <div
+                    v-if="sortableColumns.length"
+                    class="flex flex-wrap items-center gap-2 bg-slate-50 px-4 py-3"
                 >
-                    <tr>
-                        <th
-                            v-for="col in columns"
-                            :key="col.key"
-                            :class="[
-                                'px-4 py-3',
-                                col.class || '',
-                                col.sortable
-                                    ? 'cursor-pointer select-none hover:text-[#1F2933]'
-                                    : '',
-                            ]"
-                            @click="col.sortable && $emit('sort', col.key)"
-                        >
-                            <div class="flex items-center space-x-1">
-                                <span>{{ col.label }}</span>
-                                <span v-if="col.sortable" class="text-xs">
-                                    <svg
-                                        v-if="sortKey === col.key && sortOrder === 'asc'"
-                                        class="w-3.5 h-3.5"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke="currentColor"
-                                    >
-                                        <path
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            stroke-width="2"
-                                            d="M5 15l7-7 7 7"
-                                        />
-                                    </svg>
-                                    <svg
-                                        v-else-if="sortKey === col.key && sortOrder === 'desc'"
-                                        class="w-3.5 h-3.5"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke="currentColor"
-                                    >
-                                        <path
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            stroke-width="2"
-                                            d="M19 9l-7 7-7-7"
-                                        />
-                                    </svg>
-                                    <svg
-                                        v-else
-                                        class="w-3.5 h-3.5 opacity-40"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke="currentColor"
-                                    >
-                                        <path
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            stroke-width="2"
-                                            d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"
-                                        />
-                                    </svg>
-                                </span>
-                            </div>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-[#DDE3EA] bg-white">
-                    <tr
-                        v-for="(row, idx) in rows"
-                        :key="row.id || idx"
-                        class="table-row-hover transition-colors h-12"
+                    <span class="text-[11px] text-muted">Sort by</span
+                    ><button
+                        v-for="col in sortableColumns"
+                        :key="col.key"
+                        type="button"
+                        class="rounded-md border border-app bg-white px-2.5 py-2 text-[11px]"
+                        :class="{ 'text-primary-app': sortKey === col.key }"
+                        @click="$emit('sort', col.key)"
                     >
-                        <td
-                            v-for="col in columns"
-                            :key="col.key"
-                            :class="['px-4 py-3 text-sm text-[#1F2933]', col.cellClass || '']"
+                        {{ col.label
+                        }}<span v-if="sortKey === col.key">
+                            {{ sortOrder === 'asc' ? '↑' : '↓' }}</span
                         >
-                            <slot :name="col.key" :row="row" :value="row[col.key]">
-                                {{ row[col.key] }}
-                            </slot>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+                    </button>
+                </div>
+                <article v-for="(row, index) in rows" :key="row.id ?? index" class="space-y-4 p-4">
+                    <div class="font-semibold text-main">
+                        <slot :name="columns[0].key" :row="row" :value="row[columns[0].key]">{{
+                            row[columns[0].key]
+                        }}</slot>
+                    </div>
+                    <dl class="grid grid-cols-2 gap-x-4 gap-y-3">
+                        <div v-for="col in detailColumns" :key="col.key" class="min-w-0">
+                            <dt
+                                class="mb-1 text-[10px] font-medium uppercase tracking-wide text-muted"
+                            >
+                                {{ col.label }}
+                            </dt>
+                            <dd class="break-words text-xs text-main">
+                                <slot :name="col.key" :row="row" :value="row[col.key]">{{
+                                    row[col.key]
+                                }}</slot>
+                            </dd>
+                        </div>
+                    </dl>
+                    <div
+                        v-if="columns.some((col) => col.key === 'actions')"
+                        class="border-t border-slate-100 pt-3"
+                    >
+                        <slot name="actions" :row="row" />
+                    </div>
+                </article>
+            </div>
+        </template>
     </div>
 </template>
-
 <script setup>
-defineProps({
-    columns: {
-        type: Array,
-        required: true,
-    },
-    rows: {
-        type: Array,
-        required: true,
-    },
-    loading: {
-        type: Boolean,
-        default: false,
-    },
-    error: {
-        type: String,
-        default: null,
-    },
-    sortKey: {
-        type: String,
-        default: '',
-    },
-    sortOrder: {
-        type: String,
-        default: 'desc',
-    },
+import { computed } from 'vue';
+import AppIcon from './AppIcon.vue';
+const props = defineProps({
+    columns: { type: Array, required: true },
+    rows: { type: Array, required: true },
+    loading: { type: Boolean, default: false },
+    error: { type: String, default: null },
+    sortKey: { type: String, default: '' },
+    sortOrder: { type: String, default: 'desc' },
 });
-
 defineEmits(['sort', 'retry']);
+const detailColumns = computed(() => props.columns.slice(1).filter((col) => col.key !== 'actions'));
+const sortableColumns = computed(() => props.columns.filter((col) => col.sortable));
 </script>

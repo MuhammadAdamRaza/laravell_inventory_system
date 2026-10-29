@@ -1,76 +1,48 @@
 <template>
     <div class="relative w-full max-w-sm">
-        <div
-            class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#637083]"
-        >
-            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-            </svg>
-        </div>
-        <input
-            type="text"
+        <AppIcon
+            name="search"
+            class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted"
+        /><input
+            type="search"
             :value="modelValue"
             :placeholder="placeholder"
-            class="w-full pl-9 pr-8 py-2 text-sm bg-white border border-[#DDE3EA] rounded-md focus:outline-none focus:ring-2 focus:ring-[#1E5AA8] focus:border-transparent min-h-[44px]"
+            :aria-label="placeholder"
+            class="min-h-11 w-full rounded-lg border border-app bg-white py-2.5 pl-10 pr-11 text-sm text-main outline-none focus:ring-2 focus:ring-blue-100"
             @input="onInput"
-        />
-        <button
+        /><button
             v-if="modelValue"
             type="button"
-            class="absolute inset-y-0 right-0 pr-3 flex items-center text-[#637083] hover:text-[#1F2933]"
+            class="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-muted hover:text-main"
+            aria-label="Clear search"
             @click="clear"
         >
-            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M6 18L18 6M6 6l12 12"
-                />
-            </svg>
+            <AppIcon name="close" class="h-4 w-4" />
         </button>
     </div>
 </template>
-
 <script setup>
-import { ref } from 'vue';
-
+import { onUnmounted } from 'vue';
+import AppIcon from './AppIcon.vue';
 const props = defineProps({
-    modelValue: {
-        type: String,
-        default: '',
-    },
-    placeholder: {
-        type: String,
-        default: 'Search...',
-    },
-    debounce: {
-        type: Number,
-        default: 300,
-    },
+    modelValue: { type: String, default: '' },
+    placeholder: { type: String, default: 'Search...' },
+    debounce: { type: Number, default: 300 },
 });
-
 const emit = defineEmits(['update:modelValue', 'search']);
-
-let timer = null;
-
-const onInput = (e) => {
-    const value = e.target.value;
+let timer;
+function onInput(event) {
+    const value = event.target.value;
     clearTimeout(timer);
     timer = setTimeout(() => {
         emit('update:modelValue', value);
         emit('search', value);
     }, props.debounce);
-};
-
-const clear = () => {
+}
+function clear() {
     clearTimeout(timer);
     emit('update:modelValue', '');
     emit('search', '');
-};
+}
+onUnmounted(() => clearTimeout(timer));
 </script>

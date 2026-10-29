@@ -7,12 +7,12 @@
 
         <div
             v-if="loading"
-            class="space-y-4 rounded-lg border border-[#DDE3EA] bg-white p-5 sm:p-6"
+            class="surface-card space-y-4 rounded-lg border border-app bg-white p-5 sm:p-6"
             aria-live="polite"
         >
             <div class="h-5 w-40 animate-pulse rounded bg-[#E8EDF3]"></div>
-            <div class="h-11 animate-pulse rounded bg-[#F5F7FA]"></div>
-            <div class="h-11 animate-pulse rounded bg-[#F5F7FA]"></div>
+            <div class="h-11 animate-pulse rounded bg-app-bg"></div>
+            <div class="h-11 animate-pulse rounded bg-app-bg"></div>
         </div>
 
         <p
@@ -24,10 +24,10 @@
         </p>
 
         <form v-else class="space-y-5" @submit.prevent="save">
-            <section class="rounded-lg border border-[#DDE3EA] bg-white p-4 sm:p-6">
+            <section class="surface-card rounded-lg border border-app bg-white p-4 sm:p-6">
                 <div class="mb-5 border-b border-[#E8EDF3] pb-4">
-                    <h2 class="text-base font-semibold text-[#1F2933]">Business profile</h2>
-                    <p class="mt-1 text-sm text-[#637083]">
+                    <h2 class="text-base font-semibold text-main">Business profile</h2>
+                    <p class="mt-1 text-sm text-muted">
                         These details identify your organization inside the inventory system.
                     </p>
                 </div>
@@ -42,7 +42,7 @@
                             required
                             maxlength="150"
                             autocomplete="organization"
-                            class="mt-1 min-h-11 w-full min-w-0 rounded-md border border-[#DDE3EA] px-3 text-sm text-[#1F2933] focus:border-[#1E5AA8] focus:outline-none focus:ring-2 focus:ring-[#1E5AA8]/20"
+                            class="mt-1 min-h-11 w-full min-w-0 rounded-md border border-app px-3 text-sm text-main focus:border-[#1E5AA8] focus:outline-none focus:ring-2 focus:ring-[#1E5AA8]/20"
                             :aria-invalid="Boolean(fieldErrors.business_name)"
                             aria-describedby="business-name-error"
                         />
@@ -50,7 +50,8 @@
                             v-if="fieldErrors.business_name"
                             id="business-name-error"
                             class="mt-1 block text-xs text-red-700"
-                        >{{ fieldErrors.business_name[0] }}</span>
+                            >{{ fieldErrors.business_name[0] }}</span
+                        >
                     </label>
 
                     <label class="min-w-0 text-sm font-medium text-[#344054]" for="support-email">
@@ -61,7 +62,7 @@
                             type="email"
                             maxlength="255"
                             autocomplete="email"
-                            class="mt-1 min-h-11 w-full min-w-0 rounded-md border border-[#DDE3EA] px-3 text-sm text-[#1F2933] focus:border-[#1E5AA8] focus:outline-none focus:ring-2 focus:ring-[#1E5AA8]/20"
+                            class="mt-1 min-h-11 w-full min-w-0 rounded-md border border-app px-3 text-sm text-main focus:border-[#1E5AA8] focus:outline-none focus:ring-2 focus:ring-[#1E5AA8]/20"
                             :aria-invalid="Boolean(fieldErrors.support_email)"
                             aria-describedby="support-email-error"
                         />
@@ -69,7 +70,8 @@
                             v-if="fieldErrors.support_email"
                             id="support-email-error"
                             class="mt-1 block text-xs text-red-700"
-                        >{{ fieldErrors.support_email[0] }}</span>
+                            >{{ fieldErrors.support_email[0] }}</span
+                        >
                     </label>
 
                     <label class="min-w-0 text-sm font-medium text-[#344054]" for="support-phone">
@@ -80,7 +82,7 @@
                             type="tel"
                             maxlength="40"
                             autocomplete="tel"
-                            class="mt-1 min-h-11 w-full min-w-0 rounded-md border border-[#DDE3EA] px-3 text-sm text-[#1F2933] focus:border-[#1E5AA8] focus:outline-none focus:ring-2 focus:ring-[#1E5AA8]/20"
+                            class="mt-1 min-h-11 w-full min-w-0 rounded-md border border-app px-3 text-sm text-main focus:border-[#1E5AA8] focus:outline-none focus:ring-2 focus:ring-[#1E5AA8]/20"
                             :aria-invalid="Boolean(fieldErrors.support_phone)"
                             aria-describedby="support-phone-error"
                         />
@@ -88,7 +90,8 @@
                             v-if="fieldErrors.support_phone"
                             id="support-phone-error"
                             class="mt-1 block text-xs text-red-700"
-                        >{{ fieldErrors.support_phone[0] }}</span>
+                            >{{ fieldErrors.support_phone[0] }}</span
+                        >
                     </label>
                 </div>
             </section>
@@ -111,7 +114,7 @@
             <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
                 <button
                     type="submit"
-                    class="min-h-11 w-full rounded-md bg-[#1E5AA8] px-5 text-sm font-semibold text-white transition hover:bg-[#174A8A] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+                    class="min-h-11 w-full rounded-md bg-primary-app px-5 text-sm font-semibold text-white transition bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                     :disabled="saving"
                 >
                     {{ saving ? 'Saving…' : 'Save settings' }}

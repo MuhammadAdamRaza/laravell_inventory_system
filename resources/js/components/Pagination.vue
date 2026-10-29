@@ -1,44 +1,58 @@
 <template>
-    <div
+    <nav
         v-if="meta && meta.total > 0"
-        class="flex flex-col sm:flex-row items-center justify-between gap-4 py-3 border-t border-[#DDE3EA] text-sm text-[#637083]"
+        aria-label="Pagination"
+        class="flex flex-col items-center justify-between gap-3 py-4 sm:flex-row"
     >
-        <div class="text-xs sm:text-sm">
-            Showing <span class="font-medium text-[#1F2933]">{{ meta.from || 0 }}</span> to
-            <span class="font-medium text-[#1F2933]">{{ meta.to || 0 }}</span> of
-            <span class="font-medium text-[#1F2933]">{{ meta.total }}</span> results
-        </div>
-        <div class="flex items-center space-x-1">
+        <p class="text-xs text-muted">
+            <span class="font-medium text-main">{{ meta.from || 0 }}–{{ meta.to || 0 }}</span> of
+            <span class="font-medium text-main">{{ Number(meta.total).toLocaleString() }}</span>
+            results
+        </p>
+        <div class="flex items-center gap-1">
             <button
+                type="button"
+                class="icon-button border border-app bg-white disabled:opacity-35"
                 :disabled="meta.current_page <= 1"
-                class="inline-flex items-center justify-center px-3 py-2 rounded-md border border-[#DDE3EA] bg-white text-[#1F2933] hover:bg-[#F7F9FC] disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px] text-sm font-medium"
+                aria-label="Previous page"
                 @click="$emit('page-change', meta.current_page - 1)"
             >
-                Previous
-            </button>
-
-            <span class="px-3 py-2 text-sm font-medium text-[#1F2933]">
-                Page {{ meta.current_page }} of {{ meta.last_page }}
-            </span>
-
-            <button
+                <AppIcon name="left" class="h-4 w-4" /></button
+            ><button
+                v-for="page in pages"
+                :key="page"
+                type="button"
+                class="h-10 min-w-9 rounded-lg px-2 text-xs font-semibold"
+                :class="
+                    page === Number(meta.current_page)
+                        ? 'bg-primary-app text-white'
+                        : 'text-muted hover:bg-white'
+                "
+                :aria-label="`Page ${page}`"
+                :aria-current="page === Number(meta.current_page) ? 'page' : undefined"
+                @click="$emit('page-change', page)"
+            >
+                {{ page }}</button
+            ><button
+                type="button"
+                class="icon-button border border-app bg-white disabled:opacity-35"
                 :disabled="meta.current_page >= meta.last_page"
-                class="inline-flex items-center justify-center px-3 py-2 rounded-md border border-[#DDE3EA] bg-white text-[#1F2933] hover:bg-[#F7F9FC] disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px] text-sm font-medium"
+                aria-label="Next page"
                 @click="$emit('page-change', meta.current_page + 1)"
             >
-                Next
+                <AppIcon name="chevron" class="h-4 w-4" />
             </button>
         </div>
-    </div>
+    </nav>
 </template>
-
 <script setup>
-defineProps({
-    meta: {
-        type: Object,
-        required: true,
-    },
-});
-
+import { computed } from 'vue';
+import AppIcon from './AppIcon.vue';
+const props = defineProps({ meta: { type: Object, required: true } });
 defineEmits(['page-change']);
+const pages = computed(() => {
+    const total = Number(props.meta?.last_page || 1);
+    const start = Math.max(1, Math.min(Number(props.meta?.current_page || 1) - 2, total - 4));
+    return Array.from({ length: Math.min(5, total) }, (_, index) => start + index);
+});
 </script>

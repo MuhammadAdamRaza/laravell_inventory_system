@@ -43,21 +43,6 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function (): void {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/me', [AuthController::class, 'me'])->name('me');
 
-    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
-    Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount'])->name('notifications.unread-count');
-    Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead'])->name('notifications.read-all');
-    Route::patch('/notifications/{id}/read', [NotificationController::class, 'markRead'])->name('notifications.read');
-
-    Route::middleware('permission:users.manage')->group(function (): void {
-        Route::get('/failed-jobs', [FailedJobController::class, 'index'])->name('failed-jobs.index');
-        Route::post('/failed-jobs/{uuid}/retry', [FailedJobController::class, 'retry'])->name('failed-jobs.retry');
-    });
-
-    Route::middleware('permission:reports.export')->group(function (): void {
-        Route::get('/report-exports', [ReportExportController::class, 'index'])->name('report-exports.index');
-        Route::get('/report-exports/{id}/download', [ReportExportController::class, 'download'])->name('report-exports.download');
-    });
-
     // Read-only reporting and analytics
     Route::middleware('permission:reports.view')->prefix('reports')->group(function (): void {
         Route::get('/dashboard', [DashboardController::class, 'show'])
@@ -85,11 +70,6 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function (): void {
             Route::get('/inventory-valuation/export', [ReportController::class, 'exportInventoryValuation'])
                 ->middleware('permission:reports.export')->name('reports.inventory-valuation.export');
         });
-    });
-
-    Route::middleware('permission:users.manage')->group(function (): void {
-        Route::get('/system-settings', [SystemSettingsController::class, 'show'])->name('system-settings.show');
-        Route::put('/system-settings', [SystemSettingsController::class, 'update'])->name('system-settings.update');
     });
 
     // Users and Roles Management (Administrator only)
@@ -132,73 +112,79 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function (): void {
     Route::get('/inventory/movements', [InventoryController::class, 'movements'])->middleware('permission:inventory.view');
     Route::post('/inventory/opening-stock', [InventoryController::class, 'openingStock'])->middleware('permission:inventory.adjust');
 
-    Route::get('/inventory/availability', [SalesOrderController::class, 'availability'])->middleware('permission:inventory.view');
-
-    // Purchases and supplier account workflows
-    Route::get('/purchases/options', [PurchaseController::class, 'options'])->middleware(['permission:purchases.view', 'permission:purchases.create']);
-    Route::middleware('permission:purchases.view')->group(function (): void {
-        Route::get('/purchases', [PurchaseController::class, 'index']);
-        Route::get('/purchases/{purchase}', [PurchaseController::class, 'show']);
-        Route::get('/suppliers/{supplier}/purchases', [SupplierPurchaseController::class, 'index'])->middleware('permission:suppliers.view');
-        Route::get('/suppliers/{supplier}/summary', [SupplierPurchaseController::class, 'summary'])->middleware('permission:suppliers.view');
+    Route::prefix('purchases')->name('purchases.')->group(function (): void {
+        Route::get('/', [PurchaseController::class, 'index'])->middleware('permission:purchases.view')->name('index');
+        Route::get('/options', [PurchaseController::class, 'options'])->middleware('permission:purchases.view')->name('options');
+        Route::post('/', [PurchaseController::class, 'store'])->middleware('permission:purchases.create')->name('store');
+        Route::get('/{purchase}', [PurchaseController::class, 'show'])->middleware('permission:purchases.view')->name('show');
+        Route::put('/{purchase}', [PurchaseController::class, 'update'])->middleware('permission:purchases.update')->name('update');
+        Route::post('/{purchase}/submit', [PurchaseController::class, 'submit'])->middleware('permission:purchases.submit')->name('submit');
+        Route::post('/{purchase}/approve', [PurchaseController::class, 'approve'])->middleware('permission:purchases.approve')->name('approve');
+        Route::post('/{purchase}/reject', [PurchaseController::class, 'reject'])->middleware('permission:purchases.approve')->name('reject');
+        Route::post('/{purchase}/cancel', [PurchaseController::class, 'cancel'])->middleware('permission:purchases.cancel')->name('cancel');
+        Route::post('/{purchase}/receive', [PurchaseController::class, 'receive'])->middleware('permission:purchases.receive')->name('receive');
     });
-    Route::post('/purchases', [PurchaseController::class, 'store'])->middleware('permission:purchases.create');
-    Route::put('/purchases/{purchase}', [PurchaseController::class, 'update'])->middleware('permission:purchases.update');
-    Route::patch('/purchases/{purchase}', [PurchaseController::class, 'update'])->middleware('permission:purchases.update');
-    Route::post('/purchases/{purchase}/submit', [PurchaseController::class, 'submit'])->middleware('permission:purchases.submit');
-    Route::post('/purchases/{purchase}/approve', [PurchaseController::class, 'approve'])->middleware('permission:purchases.approve');
-    Route::post('/purchases/{purchase}/reject', [PurchaseController::class, 'reject'])->middleware('permission:purchases.approve');
-    Route::post('/purchases/{purchase}/cancel', [PurchaseController::class, 'cancel'])->middleware('permission:purchases.cancel');
-    Route::post('/purchases/{purchase}/receive', [PurchaseController::class, 'receive'])->middleware('permission:purchases.receive');
-    Route::post('/supplier-payments', [SupplierPurchaseController::class, 'storePayment'])->middleware('permission:suppliers.manage');
 
-    // Sales orders and customer account workflows
-    Route::get('/sales-orders/options', [SalesOrderController::class, 'options'])->middleware(['permission:sales.view', 'permission:sales.create']);
-    Route::middleware('permission:sales.view')->group(function (): void {
-        Route::get('/sales-orders', [SalesOrderController::class, 'index']);
-        Route::get('/sales-orders/{salesOrder}', [SalesOrderController::class, 'show']);
-        Route::get('/customers/{customer}/orders', [CustomerController::class, 'orders']);
+    Route::get('/suppliers/{supplier}/purchases', [SupplierPurchaseController::class, 'index'])->middleware('permission:suppliers.view')->name('suppliers.purchases');
+    Route::get('/suppliers/{supplier}/summary', [SupplierPurchaseController::class, 'summary'])->middleware('permission:suppliers.view')->name('suppliers.summary');
+    Route::post('/supplier-payments', [SupplierPurchaseController::class, 'storePayment'])->middleware('permission:suppliers.manage')->name('suppliers.payments.store');
+
+    Route::get('/customers', [CustomerController::class, 'index'])->middleware('permission:customers.view')->name('customers.index');
+    Route::post('/customers', [CustomerController::class, 'store'])->middleware('permission:customers.manage')->name('customers.store');
+    Route::get('/customers/{customer}', [CustomerController::class, 'show'])->middleware('permission:customers.view')->name('customers.show');
+    Route::put('/customers/{customer}', [CustomerController::class, 'update'])->middleware('permission:customers.manage')->name('customers.update');
+    Route::get('/customers/{customer}/orders', [CustomerController::class, 'orders'])->middleware('permission:customers.view')->name('customers.orders');
+
+    Route::prefix('sales-orders')->name('sales-orders.')->group(function (): void {
+        Route::get('/', [SalesOrderController::class, 'index'])->middleware('permission:sales.view')->name('index');
+        Route::get('/options', [SalesOrderController::class, 'options'])->middleware('permission:sales.view')->name('options');
+        Route::get('/availability', [SalesOrderController::class, 'availability'])->middleware('permission:sales.view')->name('availability');
+        Route::post('/', [SalesOrderController::class, 'store'])->middleware('permission:sales.create')->name('store');
+        Route::get('/{salesOrder}', [SalesOrderController::class, 'show'])->middleware('permission:sales.view')->name('show');
+        Route::put('/{salesOrder}', [SalesOrderController::class, 'update'])->middleware('permission:sales.update')->name('update');
+        Route::post('/{salesOrder}/confirm', [SalesOrderController::class, 'confirm'])->middleware('permission:sales.confirm')->name('confirm');
+        Route::post('/{salesOrder}/cancel', [SalesOrderController::class, 'cancel'])->middleware('permission:sales.cancel')->name('cancel');
+        Route::get('/{salesOrder}/returnable-items', [SalesReturnController::class, 'returnableItems'])->middleware('permission:returns.view')->name('returnable-items');
     });
-    Route::get('/sales-orders/{salesOrder}/returnable-items', [SalesReturnController::class, 'returnableItems'])->middleware('permission:returns.create');
-    Route::post('/sales-orders', [SalesOrderController::class, 'store'])->middleware('permission:sales.create');
-    Route::put('/sales-orders/{salesOrder}', [SalesOrderController::class, 'update'])->middleware('permission:sales.update');
-    Route::patch('/sales-orders/{salesOrder}', [SalesOrderController::class, 'update'])->middleware('permission:sales.update');
-    Route::post('/sales-orders/{salesOrder}/confirm', [SalesOrderController::class, 'confirm'])->middleware('permission:sales.confirm');
-    Route::post('/sales-orders/{salesOrder}/cancel', [SalesOrderController::class, 'cancel'])->middleware('permission:sales.cancel');
 
-    Route::get('/customers', [CustomerController::class, 'index'])->middleware('permission:customers.view');
-    Route::post('/customers', [CustomerController::class, 'store'])->middleware('permission:customers.manage');
-    Route::get('/customers/{customer}', [CustomerController::class, 'show'])->middleware('permission:customers.view');
-    Route::put('/customers/{customer}', [CustomerController::class, 'update'])->middleware('permission:customers.manage');
-    Route::patch('/customers/{customer}', [CustomerController::class, 'update'])->middleware('permission:customers.manage');
-
-    // Inter-warehouse transfers
-    Route::get('/transfers/options', [WarehouseTransferController::class, 'options'])->middleware(['permission:transfers.view', 'permission:transfers.create']);
-    Route::middleware('permission:transfers.view')->group(function (): void {
-        Route::get('/transfers', [WarehouseTransferController::class, 'index']);
-        Route::get('/transfers/{transfer}', [WarehouseTransferController::class, 'show']);
+    Route::prefix('transfers')->name('transfers.')->group(function (): void {
+        Route::get('/', [WarehouseTransferController::class, 'index'])->middleware('permission:transfers.view')->name('index');
+        Route::get('/options', [WarehouseTransferController::class, 'options'])->middleware('permission:transfers.view')->name('options');
+        Route::post('/', [WarehouseTransferController::class, 'store'])->middleware('permission:transfers.create')->name('store');
+        Route::get('/{transfer}', [WarehouseTransferController::class, 'show'])->middleware('permission:transfers.view')->name('show');
+        Route::put('/{transfer}', [WarehouseTransferController::class, 'update'])->middleware('permission:transfers.create')->name('update');
+        Route::post('/{transfer}/dispatch', [WarehouseTransferController::class, 'dispatch'])->middleware('permission:transfers.dispatch')->name('dispatch');
+        Route::post('/{transfer}/receive', [WarehouseTransferController::class, 'receive'])->middleware('permission:transfers.receive')->name('receive');
+        Route::post('/{transfer}/cancel', [WarehouseTransferController::class, 'cancel'])->middleware('permission:transfers.cancel')->name('cancel');
     });
-    Route::post('/transfers', [WarehouseTransferController::class, 'store'])->middleware('permission:transfers.create');
-    Route::put('/transfers/{transfer}', [WarehouseTransferController::class, 'update'])->middleware('permission:transfers.create');
-    Route::patch('/transfers/{transfer}', [WarehouseTransferController::class, 'update'])->middleware('permission:transfers.create');
-    Route::post('/transfers/{transfer}/dispatch', [WarehouseTransferController::class, 'dispatch'])->middleware('permission:transfers.dispatch');
-    Route::post('/transfers/{transfer}/receive', [WarehouseTransferController::class, 'receive'])->middleware('permission:transfers.receive');
-    Route::post('/transfers/{transfer}/cancel', [WarehouseTransferController::class, 'cancel'])->middleware('permission:transfers.cancel');
 
-    // Immutable stock corrections and customer returns
-    Route::middleware('permission:adjustments.view')->group(function (): void {
-        Route::get('/stock-adjustments', [StockAdjustmentController::class, 'index']);
-        Route::get('/stock-adjustments/{adjustment}', [StockAdjustmentController::class, 'show']);
-    });
-    Route::post('/stock-adjustments', [StockAdjustmentController::class, 'store'])->middleware('permission:inventory.adjust');
+    Route::get('/stock-adjustments', [StockAdjustmentController::class, 'index'])->middleware('permission:adjustments.view')->name('stock-adjustments.index');
+    Route::post('/stock-adjustments', [StockAdjustmentController::class, 'store'])->middleware('permission:inventory.adjust')->name('stock-adjustments.store');
+    Route::get('/stock-adjustments/{adjustment}', [StockAdjustmentController::class, 'show'])->middleware('permission:adjustments.view')->name('stock-adjustments.show');
 
-    Route::middleware('permission:returns.view')->group(function (): void {
-        Route::get('/sales-returns', [SalesReturnController::class, 'index']);
-        Route::get('/sales-returns/{salesReturn}', [SalesReturnController::class, 'show']);
+    Route::prefix('sales-returns')->name('sales-returns.')->group(function (): void {
+        Route::get('/', [SalesReturnController::class, 'index'])->middleware('permission:returns.view')->name('index');
+        Route::post('/', [SalesReturnController::class, 'store'])->middleware('permission:returns.create')->name('store');
+        Route::get('/{salesReturn}', [SalesReturnController::class, 'show'])->middleware('permission:returns.view')->name('show');
+        Route::put('/{salesReturn}', [SalesReturnController::class, 'update'])->middleware('permission:returns.update')->name('update');
+        Route::post('/{salesReturn}/complete', [SalesReturnController::class, 'complete'])->middleware('permission:returns.complete')->name('complete');
+        Route::post('/{salesReturn}/cancel', [SalesReturnController::class, 'cancel'])->middleware('permission:returns.cancel')->name('cancel');
     });
-    Route::post('/sales-returns', [SalesReturnController::class, 'store'])->middleware('permission:returns.create');
-    Route::put('/sales-returns/{salesReturn}', [SalesReturnController::class, 'update'])->middleware('permission:returns.update');
-    Route::patch('/sales-returns/{salesReturn}', [SalesReturnController::class, 'update'])->middleware('permission:returns.update');
-    Route::post('/sales-returns/{salesReturn}/complete', [SalesReturnController::class, 'complete'])->middleware('permission:returns.complete');
-    Route::post('/sales-returns/{salesReturn}/cancel', [SalesReturnController::class, 'cancel'])->middleware('permission:returns.cancel');
+
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount'])->name('notifications.unread-count');
+    Route::patch('/notifications/{id}/read', [NotificationController::class, 'markRead'])->name('notifications.read');
+    Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead'])->name('notifications.read-all');
+
+    Route::middleware('permission:reports.export')->group(function (): void {
+        Route::get('/report-exports', [ReportExportController::class, 'index'])->name('report-exports.index');
+        Route::get('/report-exports/{id}/download', [ReportExportController::class, 'download'])->name('report-exports.download');
+    });
+
+    Route::middleware('permission:users.manage')->group(function (): void {
+        Route::get('/system-settings', [SystemSettingsController::class, 'show'])->name('system-settings.show');
+        Route::put('/system-settings', [SystemSettingsController::class, 'update'])->name('system-settings.update');
+        Route::get('/failed-jobs', [FailedJobController::class, 'index'])->name('failed-jobs.index');
+        Route::post('/failed-jobs/{uuid}/retry', [FailedJobController::class, 'retry'])->name('failed-jobs.retry');
+    });
 });

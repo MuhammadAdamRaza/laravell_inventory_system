@@ -1,99 +1,109 @@
 <template>
-    <div
-        v-if="isOpen"
-        class="fixed inset-0 z-50 overflow-y-auto"
-        aria-labelledby="modal-title"
-        role="dialog"
-        aria-modal="true"
-    >
-        <div class="flex items-center justify-center min-h-screen px-4 text-center sm:p-0">
+    <Teleport to="body"
+        ><Transition name="fade">
             <div
-                class="fixed inset-0 bg-black/40 transition-opacity"
-                @click="$emit('cancel')"
-            ></div>
-
-            <div
-                class="relative bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-lg sm:w-full p-6 space-y-4"
+                v-if="isOpen"
+                class="fixed inset-0 z-[80] flex items-center justify-center bg-slate-950/40 p-4 backdrop-blur-sm"
+                @click.self="$emit('cancel')"
             >
-                <div class="flex items-start space-x-3">
-                    <div
-                        :class="[
-                            'w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0',
-                            isDanger
-                                ? 'bg-[#FDE8E8] text-[#B42318]'
-                                : 'bg-[#E8F1FD] text-[#1E5AA8]',
-                        ]"
+                <section
+                    ref="dialog"
+                    class="w-full max-w-md rounded-2xl border border-app bg-white p-6 shadow-2xl"
+                    role="dialog"
+                    aria-modal="true"
+                    :aria-labelledby="`${dialogId}-title`"
+                    :aria-describedby="`${dialogId}-description`"
+                    @keydown="handleKeydown"
+                >
+                    <span
+                        class="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl"
+                        :class="
+                            isDanger ? 'bg-rose-50 text-rose-600' : 'bg-blue-50 text-primary-app'
+                        "
+                        ><AppIcon :name="isDanger ? 'alert' : 'check'" class="h-6 w-6"
+                    /></span>
+                    <h2
+                        :id="`${dialogId}-title`"
+                        class="text-lg font-semibold tracking-tight text-main"
                     >
-                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                            />
-                        </svg>
+                        {{ title }}
+                    </h2>
+                    <p
+                        :id="`${dialogId}-description`"
+                        class="mt-2 text-sm leading-relaxed text-muted"
+                    >
+                        {{ message }}
+                    </p>
+                    <div class="mt-7 flex justify-end gap-3">
+                        <button
+                            ref="cancelButton"
+                            type="button"
+                            class="ui-button"
+                            @click="$emit('cancel')"
+                        >
+                            {{ cancelText }}</button
+                        ><button
+                            type="button"
+                            class="ui-button"
+                            :class="isDanger ? 'danger' : 'primary'"
+                            @click="$emit('confirm')"
+                        >
+                            {{ confirmText }}
+                        </button>
                     </div>
-                    <div>
-                        <h3 class="text-lg font-semibold text-[#1F2933]" id="modal-title">
-                            {{ title }}
-                        </h3>
-                        <p class="text-sm text-[#637083] mt-1">{{ message }}</p>
-                    </div>
-                </div>
-
-                <div class="flex justify-end space-x-3 pt-3">
-                    <button
-                        type="button"
-                        class="px-4 py-2 border border-[#DDE3EA] rounded-md text-sm font-medium text-[#1F2933] bg-white hover:bg-[#F7F9FC] min-h-[44px]"
-                        @click="$emit('cancel')"
-                    >
-                        {{ cancelText }}
-                    </button>
-                    <button
-                        type="button"
-                        :class="[
-                            'px-4 py-2 rounded-md text-sm font-medium text-white min-h-[44px] transition-colors',
-                            isDanger
-                                ? 'bg-[#B42318] hover:bg-[#912018]'
-                                : 'bg-[#1E5AA8] hover:bg-[#174A8A]',
-                        ]"
-                        @click="$emit('confirm')"
-                    >
-                        {{ confirmText }}
-                    </button>
-                </div>
+                </section>
             </div>
-        </div>
-    </div>
+        </Transition></Teleport
+    >
 </template>
-
 <script setup>
-defineProps({
-    isOpen: {
-        type: Boolean,
-        default: false,
-    },
-    title: {
-        type: String,
-        default: 'Confirm Action',
-    },
-    message: {
-        type: String,
-        default: 'Are you sure you want to proceed?',
-    },
-    confirmText: {
-        type: String,
-        default: 'Confirm',
-    },
-    cancelText: {
-        type: String,
-        default: 'Cancel',
-    },
-    isDanger: {
-        type: Boolean,
-        default: true,
-    },
+import { nextTick, onUnmounted, ref, useId, watch } from 'vue';
+import AppIcon from './AppIcon.vue';
+const props = defineProps({
+    isOpen: { type: Boolean, default: false },
+    title: { type: String, default: 'Confirm action' },
+    message: { type: String, default: 'Are you sure you want to proceed?' },
+    confirmText: { type: String, default: 'Confirm' },
+    cancelText: { type: String, default: 'Cancel' },
+    isDanger: { type: Boolean, default: true },
 });
-
-defineEmits(['confirm', 'cancel']);
+const emit = defineEmits(['confirm', 'cancel']);
+const dialogId = useId();
+const dialog = ref(null);
+const cancelButton = ref(null);
+let previousFocus;
+let previousOverflow;
+watch(
+    () => props.isOpen,
+    async (open) => {
+        if (open) {
+            previousFocus = document.activeElement;
+            previousOverflow = document.body.style.overflow;
+            document.body.style.overflow = 'hidden';
+            await nextTick();
+            cancelButton.value?.focus();
+        } else {
+            document.body.style.overflow = previousOverflow || '';
+            previousFocus?.focus();
+        }
+    },
+);
+onUnmounted(() => {
+    if (props.isOpen) document.body.style.overflow = previousOverflow || '';
+});
+function handleKeydown(event) {
+    if (event.key === 'Escape') {
+        event.preventDefault();
+        emit('cancel');
+    }
+    if (event.key !== 'Tab') return;
+    const buttons = [...dialog.value.querySelectorAll('button')];
+    if (event.shiftKey && document.activeElement === buttons[0]) {
+        event.preventDefault();
+        buttons.at(-1)?.focus();
+    } else if (!event.shiftKey && document.activeElement === buttons.at(-1)) {
+        event.preventDefault();
+        buttons[0]?.focus();
+    }
+}
 </script>

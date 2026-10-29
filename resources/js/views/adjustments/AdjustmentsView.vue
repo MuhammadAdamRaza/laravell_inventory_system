@@ -7,12 +7,12 @@
                 ><router-link
                     v-if="auth.hasPermission('inventory.adjust')"
                     :to="{ name: 'stock-adjustment-create' }"
-                    class="min-h-11 rounded bg-[#1E5AA8] px-4 py-2 text-sm font-semibold text-white"
+                    class="min-h-11 rounded bg-primary-app px-4 py-2 text-sm font-semibold text-white"
                     >New adjustment</router-link
                 ></template
             ></PageHeader
         >
-        <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <div class="filter-bar grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <input
                 v-model="search"
                 placeholder="Search reference, product, or reason"
@@ -61,7 +61,7 @@
         >
             No stock adjustments found.
         </div>
-        <div v-else class="overflow-hidden rounded-lg border bg-white">
+        <div v-else class="surface-card overflow-hidden rounded-lg border bg-white">
             <div class="hidden overflow-x-auto md:block">
                 <table class="w-full text-left text-sm">
                     <thead class="bg-slate-50 text-xs uppercase text-slate-500">
@@ -78,7 +78,7 @@
                         <tr v-for="row in rows" :key="row.id">
                             <td class="p-3">
                                 <router-link
-                                    class="font-semibold text-[#1E5AA8]"
+                                    class="font-semibold text-primary-app"
                                     :to="{
                                         name: 'stock-adjustment-detail',
                                         params: { id: row.id },
@@ -114,7 +114,7 @@
                     :to="{ name: 'stock-adjustment-detail', params: { id: row.id } }"
                     class="block space-y-2 p-4"
                     ><div class="flex justify-between gap-2">
-                        <b class="text-[#1E5AA8]">{{ row.adjustment_number }}</b
+                        <b class="text-primary-app">{{ row.adjustment_number }}</b
                         ><b :class="row.quantity_change > 0 ? 'text-emerald-700' : 'text-red-700'"
                             >{{ row.quantity_change > 0 ? '+' : '' }}{{ row.quantity_change }}</b
                         >

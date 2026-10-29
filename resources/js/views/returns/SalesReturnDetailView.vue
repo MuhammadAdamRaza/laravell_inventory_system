@@ -16,13 +16,13 @@
         </p>
         <div
             v-if="loading"
-            class="rounded-lg border bg-white p-8 text-center text-sm text-slate-500"
+            class="surface-card rounded-lg border bg-white p-8 text-center text-sm text-slate-500"
         >
             Loading return
         </div>
         <template v-else-if="record">
             <div
-                class="flex flex-col gap-4 rounded-lg border border-slate-200 bg-white p-4 sm:flex-row sm:items-center sm:justify-between"
+                class="surface-card flex flex-col gap-4 rounded-lg border border-slate-200 bg-white p-4 sm:flex-row sm:items-center sm:justify-between"
             >
                 <div class="flex flex-wrap items-center gap-3">
                     <StatusBadge :status="record.status" /><span class="text-sm text-slate-600"
@@ -54,7 +54,9 @@
                 </div>
             </div>
             <div class="grid gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(240px,1fr)]">
-                <div class="overflow-hidden rounded-lg border border-slate-200 bg-white">
+                <div
+                    class="surface-card overflow-hidden rounded-lg border border-slate-200 bg-white"
+                >
                     <h2 class="border-b px-4 py-3 font-semibold">
                         Returned items {{ record.quantity_total }} units
                     </h2>
@@ -94,7 +96,7 @@
                         {{ record.reason_summary }}
                     </p>
                 </div>
-                <aside class="rounded-lg border border-slate-200 bg-white p-4 text-sm">
+                <aside class="surface-card rounded-lg border border-slate-200 bg-white p-4 text-sm">
                     <h2 class="mb-3 font-semibold">Return history</h2>
                     <p>Created by {{ record.creator?.name || '' }}</p>
                     <p v-if="record.completed_at" class="mt-2">
@@ -109,7 +111,7 @@
                     <router-link
                         v-if="record.sales_order"
                         :to="{ name: 'sales-order-detail', params: { id: record.sales_order.id } }"
-                        class="mt-4 inline-block text-[#1E5AA8] hover:underline"
+                        class="mt-4 inline-block text-primary-app hover:underline"
                         >View sales order</router-link
                     >
                 </aside>

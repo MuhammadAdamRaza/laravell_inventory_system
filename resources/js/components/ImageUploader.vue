@@ -3,7 +3,7 @@
         <div class="flex items-center space-x-4">
             <!-- Preview Image -->
             <div
-                class="w-20 h-20 rounded-md border border-[#DDE3EA] overflow-hidden bg-[#F5F7FA] flex items-center justify-center relative flex-shrink-0"
+                class="w-20 h-20 rounded-md border border-app overflow-hidden bg-app-bg flex items-center justify-center relative flex-shrink-0"
             >
                 <img
                     v-if="previewUrl"
@@ -13,7 +13,7 @@
                 />
                 <svg
                     v-else
-                    class="w-8 h-8 text-[#637083]"
+                    class="w-8 h-8 text-muted"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -31,7 +31,7 @@
             <div class="flex-1 space-y-2">
                 <div class="flex items-center space-x-2">
                     <label
-                        class="cursor-pointer inline-flex items-center px-4 py-2 border border-[#DDE3EA] rounded-md shadow-sm text-sm font-medium text-[#1F2933] bg-white hover:bg-[#F7F9FC] min-h-[44px]"
+                        class="cursor-pointer inline-flex items-center px-4 py-2 border border-app rounded-md shadow-sm text-sm font-medium text-main bg-white bg-hover-surface min-h-[44px]"
                     >
                         <span>Choose Image</span>
                         <input
@@ -50,7 +50,7 @@
                         Remove
                     </button>
                 </div>
-                <p class="text-xs text-[#637083]">JPG, PNG, or WEBP up to 2MB.</p>
+                <p class="text-xs text-muted">JPG, PNG, or WEBP up to 2MB.</p>
             </div>
         </div>
 

@@ -18,7 +18,7 @@
             Loading form...
         </div>
         <form v-else class="space-y-5" @submit.prevent="save">
-            <div class="grid gap-4 rounded-lg border bg-white p-4 sm:grid-cols-2">
+            <div class="surface-card grid gap-4 rounded-lg border bg-white p-4 sm:grid-cols-2">
                 <label class="text-sm"
                     >Source warehouse *<select
                         v-model="form.source_warehouse_id"
@@ -57,7 +57,7 @@
                     ></textarea>
                 </label>
             </div>
-            <div class="overflow-hidden rounded-lg border bg-white">
+            <div class="surface-card overflow-hidden rounded-lg border bg-white">
                 <div class="flex justify-between border-b p-4">
                     <div>
                         <h2 class="font-semibold">Transfer items</h2>
@@ -199,7 +199,7 @@
                     >Cancel</router-link
                 ><button
                     :disabled="saving || sameWarehouse"
-                    class="min-h-11 rounded bg-[#1E5AA8] px-5 py-2 font-semibold text-white disabled:opacity-50"
+                    class="min-h-11 rounded bg-primary-app px-5 py-2 font-semibold text-white disabled:opacity-50"
                 >
                     {{ saving ? 'Saving…' : 'Save draft' }}
                 </button>

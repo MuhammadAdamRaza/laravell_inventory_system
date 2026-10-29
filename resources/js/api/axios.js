@@ -41,7 +41,8 @@ api.interceptors.response.use(
             const publicAuthPaths = ['/login', '/register', '/forgot-password', '/reset-password'];
 
             if (!publicAuthPaths.includes(window.location.pathname)) {
-                window.location.href = '/login';
+                clearTabToken();
+                window.dispatchEvent(new Event('inventory:session-expired'));
             }
         } else if (status === 403) {
             toastStore.error(

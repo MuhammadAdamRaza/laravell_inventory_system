@@ -2,7 +2,7 @@
     <section class="mx-auto max-w-5xl space-y-5">
         <PageHeader
             :title="isEdit ? 'Edit purchase' : 'New purchase'"
-            subtitle="Exact decimal preview; the server recalculates and stores the final totals"
+            subtitle="Choose a supplier and warehouse, then add the products you need to order."
         >
             <template #actions
                 ><router-link
@@ -15,7 +15,7 @@
         <div v-if="error" class="rounded-md bg-red-50 p-3 text-sm text-red-700">{{ error }}</div>
         <form class="space-y-5" @submit.prevent="save">
             <div
-                class="grid grid-cols-1 gap-4 rounded-lg border border-slate-200 bg-white p-4 sm:grid-cols-2"
+                class="surface-card grid grid-cols-1 gap-4 rounded-lg border border-slate-200 bg-white p-4 sm:grid-cols-2"
             >
                 <label class="space-y-1 text-sm font-medium"
                     >Supplier<select
@@ -56,7 +56,7 @@
                     /><small class="text-red-600">{{ fieldError('expected_date') }}</small></label
                 >
             </div>
-            <div class="space-y-3 rounded-lg border border-slate-200 bg-white p-4">
+            <div class="surface-card space-y-3 rounded-lg border border-slate-200 bg-white p-4">
                 <div class="flex items-center justify-between">
                     <h2 class="font-semibold">Items</h2>
                     <button
@@ -171,7 +171,7 @@
                     >Cancel</router-link
                 ><button
                     :disabled="saving"
-                    class="rounded-md bg-[#1E5AA8] px-5 py-3 text-sm font-semibold text-white disabled:opacity-50"
+                    class="rounded-md bg-primary-app px-5 py-3 text-sm font-semibold text-white disabled:opacity-50"
                 >
                     {{ saving ? 'Saving...' : 'Save draft' }}
                 </button>

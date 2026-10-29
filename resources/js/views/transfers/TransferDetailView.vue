@@ -19,7 +19,7 @@
         </div>
         <template v-else>
             <div
-                class="flex flex-col gap-4 rounded-lg border bg-white p-4 sm:flex-row sm:items-center sm:justify-between"
+                class="surface-card flex flex-col gap-4 rounded-lg border bg-white p-4 sm:flex-row sm:items-center sm:justify-between"
             >
                 <div class="flex flex-wrap items-center gap-3">
                     <StatusBadge :status="transfer.status" /><span class="text-sm text-slate-600"
@@ -36,7 +36,7 @@
                     ><button
                         v-if="transfer.allowed_actions.dispatch"
                         :disabled="busy"
-                        class="min-h-10 rounded bg-[#1E5AA8] px-3 py-2 text-sm font-semibold text-white"
+                        class="min-h-10 rounded bg-primary-app px-3 py-2 text-sm font-semibold text-white"
                         @click="confirmAction = 'dispatch'"
                     >
                         Dispatch stock</button
@@ -58,7 +58,7 @@
                 </div>
             </div>
             <div class="grid gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(250px,1fr)]">
-                <div class="overflow-hidden rounded-lg border bg-white">
+                <div class="surface-card overflow-hidden rounded-lg border bg-white">
                     <h2 class="border-b px-4 py-3 font-semibold">Transfer items</h2>
                     <div class="hidden overflow-x-auto md:block">
                         <table class="w-full text-left text-sm">
@@ -117,7 +117,7 @@
                         {{ transfer.notes }}
                     </p>
                 </div>
-                <aside class="rounded-lg border bg-white p-4">
+                <aside class="surface-card rounded-lg border bg-white p-4">
                     <h2 class="mb-4 font-semibold">Transfer timeline</h2>
                     <ol class="space-y-4 border-l-2 border-slate-200 pl-4 text-sm">
                         <li>

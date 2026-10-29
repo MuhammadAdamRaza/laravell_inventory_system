@@ -8,7 +8,7 @@
                 <button
                     v-if="canCreate"
                     type="button"
-                    class="inline-flex items-center px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-[#1E5AA8] hover:bg-[#174A8A] min-h-[44px] transition-colors"
+                    class="inline-flex items-center px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-primary-app bg-primary-hover min-h-[44px] transition-colors"
                     @click="openCreateModal"
                 >
                     <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -26,7 +26,7 @@
 
         <!-- Filters Bar -->
         <div
-            class="mb-4 flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between"
+            class="filter-bar mb-4 flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between"
         >
             <SearchInput
                 v-model="search"
@@ -37,7 +37,7 @@
             <div class="flex flex-wrap items-center gap-3">
                 <select
                     v-model="categoryFilter"
-                    class="px-3 py-2 bg-white border border-[#DDE3EA] rounded-md text-sm text-[#1F2933] min-h-[44px] focus:outline-none focus:ring-1 focus:ring-[#1E5AA8]"
+                    class="px-3 py-2 bg-white border border-app rounded-md text-sm text-main min-h-[44px] focus:outline-none focus:ring-1 focus:ring-[#1E5AA8]"
                     @change="fetchProducts(1)"
                 >
                     <option value="">All Categories</option>
@@ -48,7 +48,7 @@
 
                 <select
                     v-model="statusFilter"
-                    class="px-3 py-2 bg-white border border-[#DDE3EA] rounded-md text-sm text-[#1F2933] min-h-[44px] focus:outline-none focus:ring-1 focus:ring-[#1E5AA8]"
+                    class="px-3 py-2 bg-white border border-app rounded-md text-sm text-main min-h-[44px] focus:outline-none focus:ring-1 focus:ring-[#1E5AA8]"
                     @change="fetchProducts(1)"
                 >
                     <option value="">All Statuses</option>
@@ -71,21 +71,28 @@
         >
             <template #product="{ row }">
                 <div
-                    class="flex items-center space-x-3 cursor-pointer py-1"
+                    class="flex items-center gap-3 cursor-pointer rounded-lg py-1 text-left"
+                    role="button"
+                    tabindex="0"
+                    :aria-label="`View ${row.name}`"
+                    @keydown.enter="viewDetails(row)"
+                    @keydown.space.prevent="viewDetails(row)"
                     @click="viewDetails(row)"
                 >
                     <div
-                        class="w-10 h-10 rounded border border-[#DDE3EA] bg-[#F5F7FA] overflow-hidden flex items-center justify-center flex-shrink-0"
+                        class="w-12 h-12 rounded-lg border border-app bg-app-bg overflow-hidden flex items-center justify-center flex-shrink-0"
                     >
                         <img
                             v-if="row.image_url"
+                            loading="lazy"
+                            decoding="async"
                             :src="row.image_url"
                             :alt="row.name"
                             class="w-full h-full object-cover"
                         />
                         <svg
                             v-else
-                            class="w-5 h-5 text-[#637083]"
+                            class="w-5 h-5 text-muted"
                             fill="none"
                             viewBox="0 0 24 24"
                             stroke="currentColor"
@@ -99,32 +106,30 @@
                         </svg>
                     </div>
                     <div>
-                        <p class="font-medium text-[#1F2933] hover:text-[#1E5AA8]">
+                        <p class="font-medium text-main hover:text-primary-app">
                             {{ row.name }}
                         </p>
-                        <p class="text-xs text-[#637083] font-mono">{{ row.sku }}</p>
+                        <p class="text-xs text-muted font-mono">{{ row.sku }}</p>
                     </div>
                 </div>
             </template>
 
             <template #category="{ row }">
-                <span class="text-xs text-[#1F2933] font-medium">{{
-                    row.category?.name || '-'
-                }}</span>
+                <span class="text-xs text-main font-medium">{{ row.category?.name || '-' }}</span>
             </template>
 
             <template #pricing="{ row }">
                 <div class="text-xs">
-                    <p class="font-medium text-[#1F2933]">
-                        Sell: ${{ Number(row.selling_price).toFixed(2) }}
+                    <p class="font-medium text-main">
+                        Sell: PKR {{ Number(row.selling_price).toFixed(2) }}
                     </p>
-                    <p class="text-[#637083]">Buy: ${{ Number(row.purchase_price).toFixed(2) }}</p>
+                    <p class="text-muted">Buy: PKR {{ Number(row.purchase_price).toFixed(2) }}</p>
                 </div>
             </template>
 
             <template #stock_info="{ row }">
-                <div class="text-xs text-[#637083]">
-                    Min: <span class="font-medium text-[#1F2933]">{{ row.minimum_stock }}</span>
+                <div class="text-xs text-muted">
+                    Min: <span class="font-medium text-main">{{ row.minimum_stock }}</span>
                     {{ row.unit }}
                 </div>
             </template>
@@ -137,7 +142,7 @@
                 <div class="flex items-center justify-end space-x-2">
                     <button
                         type="button"
-                        class="text-[#637083] hover:text-[#1F2933] font-medium text-xs py-1 px-2 rounded hover:bg-[#F5F7FA] min-h-[32px]"
+                        class="text-muted hover:text-main font-medium text-xs py-1 px-2 rounded hover:bg-app-bg min-h-[32px]"
                         @click="viewDetails(row)"
                     >
                         View
@@ -145,7 +150,7 @@
                     <button
                         v-if="canUpdate"
                         type="button"
-                        class="text-[#1E5AA8] hover:text-[#174A8A] font-medium text-xs py-1 px-2 rounded hover:bg-[#EAF2FB] min-h-[32px]"
+                        class="text-primary-app hover:text-[#174A8A] font-medium text-xs py-1 px-2 rounded hover:bg-[#EAF2FB] min-h-[32px]"
                         @click="openEditModal(row)"
                     >
                         Edit
@@ -177,13 +182,13 @@
                 <div
                     class="relative bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-2xl sm:w-full p-6 space-y-4"
                 >
-                    <div class="flex justify-between items-center border-b border-[#DDE3EA] pb-3">
-                        <h3 class="text-lg font-semibold text-[#1F2933]">
+                    <div class="flex justify-between items-center border-b border-app pb-3">
+                        <h3 class="text-lg font-semibold text-main">
                             {{ isEditing ? 'Edit Product' : 'Create Product' }}
                         </h3>
                         <button
                             type="button"
-                            class="text-[#637083] hover:text-[#1F2933]"
+                            class="text-muted hover:text-main"
                             @click="closeModal"
                         >
                             <svg
@@ -397,7 +402,7 @@
                         </FormField>
 
                         <div>
-                            <label class="block text-[13px] font-medium text-[#637083] mb-1.5"
+                            <label class="block text-[13px] font-medium text-muted mb-1.5"
                                 >Product Image</label
                             >
                             <ImageUploader
@@ -413,10 +418,10 @@
                             </p>
                         </div>
 
-                        <div class="flex justify-end space-x-3 pt-3 border-t border-[#DDE3EA]">
+                        <div class="flex justify-end space-x-3 pt-3 border-t border-app">
                             <button
                                 type="button"
-                                class="px-4 py-2 border border-[#DDE3EA] rounded-md text-sm font-medium text-[#1F2933] bg-white hover:bg-[#F7F9FC] min-h-[44px]"
+                                class="px-4 py-2 border border-app rounded-md text-sm font-medium text-main bg-white bg-hover-surface min-h-[44px]"
                                 @click="closeModal"
                             >
                                 Cancel
@@ -424,7 +429,7 @@
                             <button
                                 type="submit"
                                 :disabled="saving"
-                                class="px-4 py-2 rounded-md text-sm font-medium text-white bg-[#1E5AA8] hover:bg-[#174A8A] disabled:opacity-50 min-h-[44px] transition-colors"
+                                class="px-4 py-2 rounded-md text-sm font-medium text-white bg-primary-app bg-primary-hover disabled:opacity-50 min-h-[44px] transition-colors"
                             >
                                 {{
                                     saving
@@ -456,11 +461,11 @@
                 <div
                     class="relative bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-xl sm:w-full p-6 space-y-4"
                 >
-                    <div class="flex justify-between items-center border-b border-[#DDE3EA] pb-3">
-                        <h3 class="text-lg font-semibold text-[#1F2933]">Product Details</h3>
+                    <div class="flex justify-between items-center border-b border-app pb-3">
+                        <h3 class="text-lg font-semibold text-main">Product Details</h3>
                         <button
                             type="button"
-                            class="text-[#637083] hover:text-[#1F2933]"
+                            class="text-muted hover:text-main"
                             @click="detailProduct = null"
                         >
                             <svg
@@ -481,7 +486,7 @@
 
                     <div class="flex flex-col sm:flex-row gap-4">
                         <div
-                            class="w-full sm:w-48 h-48 rounded-md border border-[#DDE3EA] overflow-hidden bg-[#F5F7FA] flex items-center justify-center flex-shrink-0"
+                            class="w-full sm:w-48 h-48 rounded-md border border-app overflow-hidden bg-app-bg flex items-center justify-center flex-shrink-0"
                         >
                             <img
                                 v-if="detailProduct.image_url"
@@ -491,7 +496,7 @@
                             />
                             <svg
                                 v-else
-                                class="w-16 h-16 text-[#637083]"
+                                class="w-16 h-16 text-muted"
                                 fill="none"
                                 viewBox="0 0 24 24"
                                 stroke="currentColor"
@@ -507,51 +512,44 @@
 
                         <div class="flex-1 space-y-2">
                             <div class="flex items-center justify-between">
-                                <h4 class="text-lg font-semibold text-[#1F2933]">
+                                <h4 class="text-lg font-semibold text-main">
                                     {{ detailProduct.name }}
                                 </h4>
                                 <StatusBadge :status="detailProduct.status" />
                             </div>
-                            <p class="text-xs font-mono text-[#637083]">
-                                SKU: {{ detailProduct.sku }}
-                            </p>
-                            <p class="text-xs text-[#637083]">
+                            <p class="text-xs font-mono text-muted">SKU: {{ detailProduct.sku }}</p>
+                            <p class="text-xs text-muted">
                                 Barcode: {{ detailProduct.barcode || 'N/A' }}
                             </p>
-                            <p class="text-xs text-[#637083]">
+                            <p class="text-xs text-muted">
                                 Category: {{ detailProduct.category?.name }}
                             </p>
-                            <p class="text-xs text-[#637083]">
+                            <p class="text-xs text-muted">
                                 Brand: {{ detailProduct.brand || 'N/A' }}
                             </p>
 
-                            <div
-                                class="pt-2 grid grid-cols-2 gap-2 text-xs border-t border-[#DDE3EA]"
-                            >
+                            <div class="pt-2 grid grid-cols-2 gap-2 text-xs border-t border-app">
                                 <div>
-                                    <span class="text-[#637083]">Purchase Price:</span>
-                                    <p class="font-semibold text-[#1F2933]">
-                                        ${{ Number(detailProduct.purchase_price).toFixed(2) }}
+                                    <span class="text-muted">Purchase Price:</span>
+                                    <p class="font-semibold text-main">
+                                        PKR {{ Number(detailProduct.purchase_price).toFixed(2) }}
                                     </p>
                                 </div>
                                 <div>
-                                    <span class="text-[#637083]">Selling Price:</span>
+                                    <span class="text-muted">Selling Price:</span>
                                     <p class="font-semibold text-[#1E7B3A]">
-                                        ${{ Number(detailProduct.selling_price).toFixed(2) }}
+                                        PKR {{ Number(detailProduct.selling_price).toFixed(2) }}
                                     </p>
                                 </div>
                                 <div>
-                                    <span class="text-[#637083]">Minimum Stock:</span>
-                                    <p class="font-semibold text-[#1F2933]">
+                                    <span class="text-muted">Minimum Stock:</span>
+                                    <p class="font-semibold text-main">
                                         {{ detailProduct.minimum_stock }} {{ detailProduct.unit }}
                                     </p>
                                 </div>
                             </div>
 
-                            <div
-                                v-if="detailProduct.description"
-                                class="pt-2 text-xs text-[#637083]"
-                            >
+                            <div v-if="detailProduct.description" class="pt-2 text-xs text-muted">
                                 {{ detailProduct.description }}
                             </div>
                         </div>

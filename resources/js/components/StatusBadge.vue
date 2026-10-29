@@ -1,12 +1,9 @@
 <template>
     <span
         :style="{ backgroundColor: badgeColors.bg, color: badgeColors.text }"
-        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize"
+        class="status-badge inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-[10px] font-semibold capitalize"
     >
-        <span
-            class="w-1.5 h-1.5 mr-1.5 rounded-full"
-            :style="{ backgroundColor: badgeColors.text }"
-        ></span>
+        <span class="w-1 h-1 rounded-full" :style="{ backgroundColor: badgeColors.text }"></span>
         {{ displayLabel }}
     </span>
 </template>

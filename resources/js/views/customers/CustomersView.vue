@@ -4,22 +4,22 @@
             <template #actions
                 ><button
                     v-if="canManage"
-                    class="min-h-11 rounded-md bg-[#1E5AA8] px-4 py-2 text-sm font-semibold text-white hover:bg-[#174A8A]"
+                    class="min-h-11 rounded-md bg-primary-app px-4 py-2 text-sm font-semibold text-white bg-primary-hover"
                     @click="openCreate"
                 >
                     Add customer
                 </button></template
             >
         </PageHeader>
-        <div class="grid gap-3 sm:grid-cols-[minmax(0,1fr)_200px]">
+        <div class="filter-bar grid gap-3 sm:grid-cols-[minmax(0,1fr)_200px]">
             <input
                 v-model="search"
-                class="min-h-11 rounded-md border border-[#DDE3EA] bg-white px-3 text-sm"
+                class="min-h-11 rounded-md border border-app bg-white px-3 text-sm"
                 placeholder="Search name, phone, or email"
                 @input="fetchCustomers(1)"
             /><select
                 v-model="status"
-                class="min-h-11 rounded-md border border-[#DDE3EA] bg-white px-3 text-sm"
+                class="min-h-11 rounded-md border border-app bg-white px-3 text-sm"
                 @change="fetchCustomers(1)"
             >
                 <option value="">All statuses</option>
@@ -36,11 +36,11 @@
         </div>
         <div
             v-else-if="!rows.length"
-            class="rounded-lg border border-dashed border-slate-300 bg-white p-10 text-center text-sm text-slate-500"
+            class="surface-card rounded-lg border border-dashed border-slate-300 bg-white p-10 text-center text-sm text-slate-500"
         >
             No customers found.
         </div>
-        <div v-else class="overflow-hidden rounded-lg border border-[#DDE3EA] bg-white">
+        <div v-else class="surface-card overflow-hidden rounded-lg border border-app bg-white">
             <div class="hidden overflow-x-auto md:block">
                 <table class="w-full text-left text-sm">
                     <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
@@ -57,7 +57,7 @@
                         <tr v-for="customer in rows" :key="customer.id" class="hover:bg-slate-50">
                             <td class="px-4 py-3">
                                 <router-link
-                                    class="font-semibold text-[#1E5AA8] hover:underline"
+                                    class="font-semibold text-primary-app hover:underline"
                                     :to="{ name: 'customer-detail', params: { id: customer.id } }"
                                     >{{ customer.name }}</router-link
                                 >
@@ -69,7 +69,7 @@
                             <td class="px-4 py-3">
                                 <button
                                     v-if="canManage"
-                                    class="text-[#1E5AA8] hover:underline"
+                                    class="text-primary-app hover:underline"
                                     @click="openEdit(customer)"
                                 >
                                     Edit
@@ -83,7 +83,7 @@
                 <article v-for="customer in rows" :key="customer.id" class="space-y-2 p-4">
                     <div class="flex items-start justify-between gap-3">
                         <router-link
-                            class="font-semibold text-[#1E5AA8]"
+                            class="font-semibold text-primary-app"
                             :to="{ name: 'customer-detail', params: { id: customer.id } }"
                             >{{ customer.name }}</router-link
                         ><StatusBadge :status="customer.status" />
@@ -95,7 +95,7 @@
                         <span>{{ customer.sales_orders_count || 0 }} orders</span
                         ><button
                             v-if="canManage"
-                            class="text-[#1E5AA8]"
+                            class="text-primary-app"
                             @click="openEdit(customer)"
                         >
                             Edit
@@ -176,7 +176,7 @@
                         Close</button
                     ><button
                         :disabled="saving"
-                        class="min-h-11 rounded-md bg-[#1E5AA8] px-4 font-semibold text-white disabled:opacity-50"
+                        class="min-h-11 rounded-md bg-primary-app px-4 font-semibold text-white disabled:opacity-50"
                     >
                         {{ saving ? 'Saving…' : 'Save customer' }}
                     </button>

@@ -8,12 +8,12 @@
                 ><router-link
                     v-if="auth.hasPermission('returns.create')"
                     :to="{ name: 'sales-return-create' }"
-                    class="inline-flex min-h-11 items-center justify-center rounded-md bg-[#1E5AA8] px-4 py-2 text-sm font-semibold text-white hover:bg-[#174A8A]"
+                    class="inline-flex min-h-11 items-center justify-center rounded-md bg-primary-app px-4 py-2 text-sm font-semibold text-white bg-primary-hover"
                     >Record return</router-link
                 ></template
             >
         </PageHeader>
-        <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="filter-bar grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <input
                 v-model="filters.search"
                 aria-label="Search returns"
@@ -52,17 +52,20 @@
         </p>
         <div
             v-else-if="loading"
-            class="rounded-lg border border-slate-200 bg-white p-8 text-center text-sm text-slate-500"
+            class="surface-card rounded-lg border border-slate-200 bg-white p-8 text-center text-sm text-slate-500"
         >
             Loading customer returns
         </div>
         <div
             v-else-if="!rows.length"
-            class="rounded-lg border border-dashed border-slate-300 bg-white p-10 text-center text-sm text-slate-500"
+            class="surface-card rounded-lg border border-dashed border-slate-300 bg-white p-10 text-center text-sm text-slate-500"
         >
             No returns match these filters.
         </div>
-        <div v-else class="overflow-hidden rounded-lg border border-slate-200 bg-white">
+        <div
+            v-else
+            class="surface-card overflow-hidden rounded-lg border border-slate-200 bg-white"
+        >
             <div class="hidden overflow-x-auto md:block">
                 <table class="w-full text-left text-sm">
                     <thead class="bg-slate-50 text-xs uppercase text-slate-500">
@@ -79,7 +82,7 @@
                         <tr v-for="row in rows" :key="row.id" class="hover:bg-slate-50">
                             <td class="px-4 py-3">
                                 <router-link
-                                    class="font-semibold text-[#1E5AA8] hover:underline"
+                                    class="font-semibold text-primary-app hover:underline"
                                     :to="{ name: 'sales-return-detail', params: { id: row.id } }"
                                     >{{ row.return_number }}</router-link
                                 >
@@ -100,7 +103,7 @@
                     :to="{ name: 'sales-return-detail', params: { id: row.id } }"
                     class="block space-y-2 p-4"
                     ><div class="flex items-center justify-between gap-3">
-                        <strong class="text-[#1E5AA8]">{{ row.return_number }}</strong
+                        <strong class="text-primary-app">{{ row.return_number }}</strong
                         ><StatusBadge :status="row.status" />
                     </div>
                     <p class="text-sm text-slate-700">
